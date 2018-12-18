@@ -1,0 +1,3 @@
+"game_id","team_id","HoA","won","settled_in","head_coach","goals","shots","hits","pim","powerPlayOpportunities","powerPlayGoals","faceOffWinPercentage","giveaways","takeaways"
+"2012030221","3","away",FALSE,"OT","John Tortorella",2,35,44,8,3,0,44.8,17,7
+"2012030221","6","home",TRUE,"OT","Claude Julien",3,48,51,6,4,1,55.2,4,5
