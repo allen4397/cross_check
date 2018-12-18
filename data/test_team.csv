@@ -1,0 +1,7 @@
+"team_id","franchiseId","shortName","teamName","abbreviation","link"
+"1","23","New Jersey","Devils","NJD","/api/v1/teams/1"
+"4","16","Philadelphia","Flyers","PHI","/api/v1/teams/4"
+"26","14","Los Angeles","Kings","LAK","/api/v1/teams/26"
+"14","31","Tampa Bay","Lightning","TBL","/api/v1/teams/14"
+"6","6","Boston","Bruins","BOS","/api/v1/teams/6"
+"3","10","NY Rangers","Rangers","NYR","/api/v1/teams/3"
