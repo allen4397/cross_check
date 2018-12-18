@@ -3,6 +3,7 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require './lib/game'
 require './lib/stat_tracker'
+require 'pry'
 
 class TeamTest < Minitest::Test
 
@@ -24,6 +25,20 @@ class TeamTest < Minitest::Test
   def test_it_exists
 
     assert_instance_of Team, @stat_tracker.teams[0]
+  end
+
+  def test_it_has_team_info
+
+    test_team = @stat_tracker.teams[0]
+
+    expected = {team_id: "1",
+                franchise_id: "23",
+                short_name: "New Jersey",
+                team_name: "Devils",
+                abbreviation: "NJD",
+                link: "/api/v1/teams/1"
+    }
+    assert_equal expected, test_team.team_info
   end
 
 
