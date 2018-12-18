@@ -12,6 +12,7 @@ class StatTracker
     game_instance(info_hash[:games])
     @teams = []
     team_instance(info_hash[:teams])
+
   end
 
   def self.from_csv(data)
@@ -44,6 +45,28 @@ class StatTracker
     end
     team_hash = Hash.new
     team_hash[id] = found_team.provide_info
+
+  end
+
+  def average_goals_per_game
+
+    total_goals = @games.inject(0) do |sum, game|
+      sum + game.total_score
+    end
+    (total_goals.to_f/@games.length.to_f).round(2)
+  end
+
+  def average_goals_by_season
+    hash = @games.group_by do |game|
+      game.season
+    end
+    hash.each do |k, v|
+      games_scores = v.inject(0) do |sum, games|
+        sum + games.total_score
+      end
+      hash[k] = (games_scores.to_f/hash.values.flatten.length.to_f).round(2)
+    end
+
   end
 
 

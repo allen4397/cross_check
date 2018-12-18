@@ -9,7 +9,7 @@ class StatTrackerTest < Minitest::Test
   def setup
     game_path = './data/test_game.csv'
     team_path = './data/test_team.csv'
-    game_teams_path = './data/game_teams_stats.csv'
+    game_teams_path = './data/test_game_teams_stats.csv'
 
     @locations = {
      games: game_path,
@@ -55,5 +55,16 @@ class StatTrackerTest < Minitest::Test
 
     assert_equal expected, @stat_tracker.team_info("1")
 
+  end
+
+  def test_it_can_calculate_average_goals_per_game
+
+    assert_equal 4.83, @stat_tracker.average_goals_per_game
+    binding.pry
+  end
+
+  def test_it_can_calculate_average_goals_by_season
+
+    assert_equal 4.83, @stat_tracker.average_goals_by_season
   end
 end
