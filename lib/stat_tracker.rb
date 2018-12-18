@@ -38,5 +38,13 @@ class StatTracker
     end
   end
 
+  def team_info(id)
+    found_team = @teams.find do |team|
+      team.team_id == id
+    end
+    team_hash = Hash.new
+    team_hash[id] = found_team.provide_info
+  end
+
 
 end

@@ -2,6 +2,7 @@ require './test/test_helper'
 require 'minitest/autorun'
 require 'minitest/pride'
 require './lib/stat_tracker'
+require 'pry'
 
 class StatTrackerTest < Minitest::Test
 
@@ -40,5 +41,19 @@ class StatTrackerTest < Minitest::Test
   def test_it_creates_teams_off_csv
     assert_instance_of Team, @stat_tracker.teams[0]
     assert_equal 6, @stat_tracker.teams.count
+  end
+
+  def test_it_provides_team_info_from_team_id
+    expected = {
+                franchise_id: "23",
+                short_name: "New Jersey",
+                team_name: "Devils",
+                abbreviation: "NJD",
+                link: "/api/v1/teams/1"
+    }
+
+
+    assert_equal expected, @stat_tracker.team_info("1")
+
   end
 end

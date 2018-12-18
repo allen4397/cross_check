@@ -3,6 +3,8 @@ require 'pry'
 
 class Team
 
+  attr_reader :team_id
+
   def initialize(team_info)
     @team_id = team_info[:team_id]
     @franchise_id = team_info[:franchiseid]
@@ -12,14 +14,15 @@ class Team
     @link = team_info[:link]
   end
 
-  def team_info
-    { team_id: @team_id,
-                  franchise_id: @franchise_id,
+  def provide_info
+                { franchise_id: @franchise_id,
                   short_name: @short_name,
                   team_name: @team_name,
                   abbreviation: @abbreviation,
                   link: @link}
 
   end
+
+
 
 end

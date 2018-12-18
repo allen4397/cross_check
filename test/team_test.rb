@@ -27,19 +27,23 @@ class TeamTest < Minitest::Test
     assert_instance_of Team, @stat_tracker.teams[0]
   end
 
-  def test_it_has_team_info
-
-    test_team = @stat_tracker.teams[0]
-
-    expected = {team_id: "1",
+  def test_it_can_provide_info
+    expected = {
                 franchise_id: "23",
                 short_name: "New Jersey",
                 team_name: "Devils",
                 abbreviation: "NJD",
                 link: "/api/v1/teams/1"
     }
-    assert_equal expected, test_team.team_info
+
+    test_team = @stat_tracker.teams[0]
+
+    assert_equal expected, test_team.provide_info
+
   end
+
+
+
 
 
 
