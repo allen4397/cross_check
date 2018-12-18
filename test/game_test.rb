@@ -34,4 +34,10 @@ class GameTest < Minitest::Test
     assert_equal 5, game.total_score
 
   end
+
+  def test_it_can_report_the_outcome
+    game = @stat_tracker.games[0]
+
+    assert_equal "home win OT", game.outcome
+  end
 end
