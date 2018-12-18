@@ -20,7 +20,6 @@ class Team
                   team_name: @team_name,
                   abbreviation: @abbreviation,
                   link: @link}
-
   end
 
 
