@@ -18,7 +18,6 @@ class GameTest < Minitest::Test
     }
 
     @stat_tracker = StatTracker.new(@locations)
-
   end
 
   def test_it_exists

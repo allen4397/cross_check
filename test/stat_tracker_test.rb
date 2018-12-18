@@ -9,7 +9,7 @@ class StatTrackerTest < Minitest::Test
   def setup
     game_path = './data/test_game.csv'
     team_path = './data/test_team.csv'
-    game_teams_path = './data/game_teams_stats.csv'
+    game_teams_path = './data/test_game_teams_stats.csv'
 
     @locations = {
      games: game_path,
@@ -43,6 +43,32 @@ class StatTrackerTest < Minitest::Test
     assert_equal 6, @stat_tracker.teams.count
   end
 
+  def test_it_provides_team_info_from_team_id
+    expected = {
+                franchise_id: "23",
+                short_name: "New Jersey",
+                team_name: "Devils",
+                abbreviation: "NJD",
+                link: "/api/v1/teams/1"
+    }
+
+
+    assert_equal expected, @stat_tracker.team_info("1")
+
+  end
+
+  def test_it_can_calculate_average_goals_per_game
+
+    assert_equal 4.83, @stat_tracker.average_goals_per_game
+  end
+
+  def test_it_can_calculate_average_goals_by_season
+
+    expected = {"20122013" => 4.83}
+
+    assert_equal expected, @stat_tracker.average_goals_by_season
+  end
+
   def test_it_calculates_lowest_total_score
     assert_equal 3, @stat_tracker.lowest_total_score
   end
@@ -57,7 +83,6 @@ class StatTrackerTest < Minitest::Test
 
     assert_equal expected, @stat_tracker.game_count_by_venue
   end
-
 
   def test_it_gets_venue_with_most_games
     skip
