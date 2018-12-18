@@ -4,11 +4,11 @@ require 'minitest/pride'
 require './lib/game'
 require './lib/stat_tracker'
 
-class GameTest < Minitest::Test
+class TeamTest < Minitest::Test
 
   def setup
     game_path = './data/test_game.csv'
-    team_path = './data/team_info.csv'
+    team_path = './data/test_team.csv'
     game_teams_path = './data/game_teams_stats.csv'
 
     @locations = {
@@ -17,21 +17,15 @@ class GameTest < Minitest::Test
      game_teams: game_teams_path
     }
 
-    @stat_tracker = StatTracker.new(@locations)
+    @stat_tracker = StatTracker.from_csv(@locations)
 
   end
 
   def test_it_exists
-    game = @stat_tracker.games[0]
 
-    assert_instance_of Game, game
+    assert_instance_of Team, @stat_tracker.teams[0]
   end
 
-  def test_it_can_calculate_total_score
 
-    game = @stat_tracker.games[0]
 
-    assert_equal 5, game.total_score
-
-  end
 end
