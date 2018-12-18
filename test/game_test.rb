@@ -28,10 +28,15 @@ class GameTest < Minitest::Test
   end
 
   def test_it_can_calculate_total_score
-
     game = @stat_tracker.games[0]
 
     assert_equal 5, game.total_score
-
   end
+
+  def test_it_calculates_score_difference
+    game = @stat_tracker.games[0]
+
+    assert_equal 1, game.score_difference
+  end 
+
 end
