@@ -18,4 +18,5 @@ class StatTracker
       @games << Game.new(row)
     end
   end
+
 end
