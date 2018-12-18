@@ -38,6 +38,12 @@ class StatTracker
     end
   end
 
+  def percentage_home_wins
+    games_won_by_home = games.find_all do |game|
+      game.outcome[0..3] == "home"
+    end
+    games_won_by_home.count.to_f / games.count * 100
+
   def team_info(id)
     found_team = @teams.find do |team|
       team.team_id == id
@@ -123,4 +129,10 @@ class StatTracker
     count_of_games_by_season.key(lowest_count)
   end
 
+  def percentage_visitor_wins
+    games_won_by_visitor = games.find_all do |game|
+      game.outcome[0..3] == "away"
+    end
+    games_won_by_visitor.count.to_f / games.count * 100
+  end
 end

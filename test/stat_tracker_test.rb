@@ -29,7 +29,7 @@ class StatTrackerTest < Minitest::Test
   def test_it_creates_games_off_csv
     skip
     assert_instance_of Game, @stat_tracker.games[0]
-    assert_equal 6, @stat_tracker.games.count
+    assert_equal 8, @stat_tracker.games.count
   end
 
   def test_it_can_calculate_highest_total_score
@@ -40,7 +40,15 @@ class StatTrackerTest < Minitest::Test
   def test_it_creates_teams_off_csv
     skip
     assert_instance_of Team, @stat_tracker.teams[0]
-    assert_equal 6, @stat_tracker.teams.count
+    assert_equal 4, @stat_tracker.teams.count
+  end
+
+  def test_it_can_calculate_percentage_of_games_won_by_home_team
+    assert_equal 50.0, @stat_tracker.percentage_home_wins
+  end
+
+  def test_it_can_calculate_percentage_of_games_won_by_away_team
+    assert_equal 50.0, @stat_tracker.percentage_visitor_wins
   end
 
   def test_it_provides_team_info_from_team_id
