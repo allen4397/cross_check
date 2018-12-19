@@ -42,7 +42,7 @@ class StatTracker
     games_won_by_home = games.find_all do |game|
       game.outcome[0..3] == "home"
     end
-    games_won_by_home.count.to_f / games.count * 100
+    (games_won_by_home.count.to_f / games.count * 100).round(2)
   end
 
   def team_info(id)
@@ -136,6 +136,6 @@ class StatTracker
     games_won_by_visitor = games.find_all do |game|
       game.outcome[0..3] == "away"
     end
-    games_won_by_visitor.count.to_f / games.count * 100
+    (games_won_by_visitor.count.to_f / games.count * 100).round(2)
   end
 end
