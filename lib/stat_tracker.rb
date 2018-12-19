@@ -1,11 +1,11 @@
 require 'csv'
 require_relative 'game'
 require_relative 'team'
-
+require 'pry'
 
 class StatTracker
-  attr_reader :games,
-              :teams
+  attr_accessor :teams,
+                :games
 
   def initialize(info_hash)
     @games = []
@@ -244,5 +244,59 @@ class StatTracker
       total_wins.to_f / total_games_played
     end
     team_with_highest_win_percentage.team_name
+  end
+
+  def biggest_bust(season_id)
+    preseason = []
+    reg_season = []
+    @games.each do |game|
+      if season_id == game.season && game.type == "P"
+        preseason << game
+      elsif season_id == game.season && game.type == "R"
+        reg_season << game
+      end
+    end
+    largest_decrease_in_percentage = @teams.max_by do |team|
+      total_preseason_wins = preseason.inject(0) do |wins, game|
+        if team.team_id == game.away_team_id && game.outcome.include?("away")
+          wins + 1
+        elsif team.team_id == game.home_team_id && game.outcome.include?("home")
+          wins + 1
+        else
+          wins
+        end
+      end
+      total_preseason_games_played = preseason.inject(0) do |total_played, game|
+        if team.team_id == game.away_team_id || team.team_id == game.home_team_id
+          total_played + 1
+        else
+          total_played
+        end
+      end
+      preseason_win_percentage = total_preseason_wins.to_f / total_preseason_games_played
+      total_reg_season_wins = reg_season.inject(0) do |wins, game|
+        if team.team_id == game.away_team_id && game.outcome.include?("away")
+          wins + 1
+        elsif team.team_id == game.home_team_id && game.outcome.include?("home")
+          wins + 1
+        else
+          wins
+        end
+      end
+      total_reg_season_games_played = reg_season.inject(0) do |total_played, game|
+        if team.team_id == game.away_team_id || team.team_id == game.home_team_id
+          total_played + 1
+        else
+          total_played
+        end
+      end
+      reg_season_win_percentage = total_reg_season_wins.to_f / total_reg_season_games_played
+      if reg_season_win_percentage != 0
+        preseason_win_percentage/reg_season_win_percentage
+      else
+        100
+      end
+    end
+    largest_decrease_in_percentage.team_name
   end
 end

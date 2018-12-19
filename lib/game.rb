@@ -7,7 +7,8 @@ class Game
               :away_team_id,
               :home_team_id,
               :away_goals,
-              :home_goals
+              :home_goals,
+              :type
 
   def initialize(game_info)
     @away_goals = game_info[:away_goals].to_i
@@ -17,6 +18,7 @@ class Game
     @outcome = game_info[:outcome]
     @away_team_id = game_info[:away_team_id]
     @home_team_id = game_info[:home_team_id]
+    @type = game_info[:type]
   end
 
   def total_score
