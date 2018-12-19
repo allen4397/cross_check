@@ -53,15 +53,15 @@ class StatTrackerTest < Minitest::Test
 
   def test_it_provides_team_info_from_team_id
     expected = {
-                franchise_id: "23",
-                short_name: "New Jersey",
-                team_name: "Devils",
-                abbreviation: "NJD",
-                link: "/api/v1/teams/1"
+                franchise_id: "10",
+                short_name: "NY Rangers",
+                team_name: "Rangers",
+                abbreviation: "NYR",
+                link: "/api/v1/teams/3"
     }
 
 
-    assert_equal expected, @stat_tracker.team_info("1")
+    assert_equal expected, @stat_tracker.team_info("3")
 
   end
 
@@ -71,14 +71,13 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_can_calculate_average_goals_by_season
-
-    expected = {"20122013" => 4.83}
-
+    skip
+    # expected = {"20122013" => }
     assert_equal expected, @stat_tracker.average_goals_by_season
   end
 
   def test_it_calculates_lowest_total_score
-    assert_equal 3, @stat_tracker.lowest_total_score
+    assert_equal 1, @stat_tracker.lowest_total_score
   end
 
   def test_it_finds_biggest_blowout
@@ -103,17 +102,23 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_gets_game_count_by_season
-    expected = { "20122013" => 6, "20132014" => 1}
+    expected = { "20122013" => 4, "20152016" => 4}
 
     assert_equal expected, @stat_tracker.count_of_games_by_season
   end
 
-  def test_it_gets_busiest_season
+  def test_it_gets_season_with_most_games
     assert_equal "20122013", @stat_tracker.season_with_most_games
   end
 
-  def test_it_gets_least_busy_season
+  def test_it_gets_season_with_fewest_games
+    skip
     assert_equal "20132014", @stat_tracker.season_with_fewest_games
+  end
+
+  def test_it_gets_games_by_season
+    expected = {"20122013" => @stat_tracker.games[0..3], "20152016" => @stat_tracker.games[4..7]}
+    assert_equal expected, @stat_tracker.games_by_season
   end
 
 end

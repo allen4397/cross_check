@@ -43,6 +43,7 @@ class StatTracker
       game.outcome[0..3] == "home"
     end
     games_won_by_home.count.to_f / games.count * 100
+  end
 
   def team_info(id)
     found_team = @teams.find do |team|
@@ -59,13 +60,18 @@ class StatTracker
     (total_goals.to_f/@games.length.to_f).round(2)
   end
 
-  def average_goals_by_season
-    hash = @games.group_by do |game|
+  def games_by_season
+    games_by_season = @games.group_by do |game|
       game.season
     end
-    hash.each do |k, v|
-      games_scores = v.inject(0) do |sum, games|
-        sum + games.total_score
+  end
+
+  def average_goals_by_season
+    #GUYS YOU ARE WORKING ON FIXING THIS RIGHT NOW!
+    average_by_season = {}
+    games_by_season.each do |season, games|
+      games_scores = v.inject(0) do |sum, game|
+        sum + game.total_score
       end
       hash[k] = (games_scores.to_f/hash.values.flatten.length.to_f).round(2)
     end
@@ -89,7 +95,7 @@ class StatTracker
     venue_events = @games.group_by do |game|
       game.venue
     end
-    venue_count = venue_events.map do |venue, games|
+    venue_events.map do |venue, games|
       [venue, games.count]
     end
   end
@@ -109,10 +115,6 @@ class StatTracker
   end
 
   def count_of_games_by_season
-    game_count_by_season = {}
-    games_by_season = @games.group_by do |game|
-      game.season
-    end
     games_by_season.each do |season, games|
       game_count_by_season[season] = games.count
     end
