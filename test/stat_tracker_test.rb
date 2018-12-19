@@ -111,4 +111,49 @@ class StatTrackerTest < Minitest::Test
     assert_equal expected, @stat_tracker.games_by_season
   end
 
+  def test_it_gets_home_win_percentage_for_all_teams
+
+    expected = { "6" => 100.0,
+                  "3" => 50.0,
+                  "24" => 0.0,
+                  "19" => 50.0,
+                  "16" => 0.0
+
+    }
+    assert_equal expected, @stat_tracker.home_win_percentage_per_team
+  end
+
+  def test_it_gets_away_win_percentage_for_all_teams
+
+    expected = {  "6" => 50.0,
+                  "3" => 0.0,
+                  "17" => 100.0,
+                  "19" => 100.0,
+                  "16" => 50.0
+
+    }
+    assert_equal expected, @stat_tracker.away_win_percentage_per_team
+  end
+
+  def test_it_can_assign_home_and_away_percentages_to_teams
+
+    @stat_tracker.assign_percentages_to_teams
+
+    assert_equal 100.0, @stat_tracker.teams[0].home_win_percentage
+    assert_equal 0.0, @stat_tracker.teams[1].away_win_percentage
+  end
+
+  def test_it_can_return_the_best_fans
+
+    assert_equal "Bruins", @stat_tracker.best_fans
+    binding.pry
+  end
+
+  def test_it_can_return_array_of_worst_fans
+
+  assert_equal ["Blackhawks", "Red Wings"], @stat_tracker.worst_fans
+  end
+
+
+
 end

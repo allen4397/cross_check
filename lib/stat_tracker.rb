@@ -12,7 +12,6 @@ class StatTracker
     game_instance(info_hash[:games])
     @teams = []
     team_instance(info_hash[:teams])
-
   end
 
   def self.from_csv(data)
@@ -138,4 +137,95 @@ class StatTracker
     end
     (games_won_by_visitor.count.to_f / games.count * 100).round(2)
   end
+
+
+  def home_win_percentage_per_team
+    home_win_percentage = Hash.new(0)
+
+    games_played_at_home_per_team = {}
+    games_played_at_home_per_team = @games.group_by do |game|
+      game.home_team_id
+    end
+
+    games_played_at_home_per_team.each do |home_team_id, games|
+
+      games_won = games.inject(0) do |sum, game_outcome|
+        if game_outcome.outcome.include?("home win")
+          sum + 1
+        else
+          sum
+        end
+      end #ends games_won
+
+      average = (games_won/games.length.to_f) * 100.0
+      home_win_percentage[home_team_id] = average
+
+    end
+    home_win_percentage
+  end
+
+
+  def away_win_percentage_per_team
+    away_win_percentage = Hash.new(0)
+
+    games_played_away_per_team = {}
+    games_played_away_per_team = @games.group_by do |game|
+      game.away_team_id
+    end
+
+    games_played_away_per_team.each do |away_team_id, games|
+
+      games_won = games.inject(0) do |sum, game_outcome|
+        if game_outcome.outcome.include?("away win")
+          sum + 1
+        else
+          sum
+        end
+      end #ends games_won
+
+      average = (games_won/games.length.to_f) * 100.0
+      away_win_percentage[away_team_id] = average
+    end
+    away_win_percentage
+  end
+
+  def assign_percentages_to_teams
+    @teams.each do |team|
+      team.away_win_percentage = away_win_percentage_per_team[team.team_id]
+  end
+
+  @teams.each do |team|
+    team.home_win_percentage = home_win_percentage_per_team[team.team_id]
+end
+
+  end
+
+  def best_fans
+    assign_percentages_to_teams
+    best_fans_team = @teams.max_by do |team|
+      team.home_win_percentage - team.away_win_percentage
+    end
+    best_fans_team.team_name
+  end
+
+  def worst_fans
+    assign_percentages_to_teams
+
+    worst_fans_teams = @teams.select do |team|
+      team.away_win_percentage > team.home_win_percentage
+    end
+
+    worst_fans_teams.map do |team|
+      team.team_name
+    end
+  end
+
+  def win_percentage(team_games_hash)
+    team_games_hash.each do |
+  end
+  def team_win_percentage_per_season
+  end
+
+
+
 end
