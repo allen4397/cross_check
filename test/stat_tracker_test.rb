@@ -27,20 +27,17 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_creates_games_off_csv
-    skip
     assert_instance_of Game, @stat_tracker.games[0]
-    assert_equal 8, @stat_tracker.games.count
+    assert_equal 10, @stat_tracker.games.count
   end
 
   def test_it_can_calculate_highest_total_score
-
     assert_equal 7, @stat_tracker.highest_total_score
   end
 
   def test_it_creates_teams_off_csv
-    skip
     assert_instance_of Team, @stat_tracker.teams[0]
-    assert_equal 4, @stat_tracker.teams.count
+    assert_equal 6, @stat_tracker.teams.count
   end
 
   def test_it_can_calculate_percentage_of_games_won_by_home_team
@@ -53,32 +50,28 @@ class StatTrackerTest < Minitest::Test
 
   def test_it_provides_team_info_from_team_id
     expected = {
-                franchise_id: "23",
-                short_name: "New Jersey",
-                team_name: "Devils",
-                abbreviation: "NJD",
-                link: "/api/v1/teams/1"
+                franchise_id: "10",
+                short_name: "NY Rangers",
+                team_name: "Rangers",
+                abbreviation: "NYR",
+                link: "/api/v1/teams/3"
     }
 
 
-    assert_equal expected, @stat_tracker.team_info("1")
-
+    assert_equal expected, @stat_tracker.team_info("3")
   end
 
   def test_it_can_calculate_average_goals_per_game
-
-    assert_equal 4.83, @stat_tracker.average_goals_per_game
+    assert_equal 4.9, @stat_tracker.average_goals_per_game
   end
 
   def test_it_can_calculate_average_goals_by_season
-
-    expected = {"20122013" => 4.83}
-
+    expected = {"20122013" => 5.17, "20152016" => 4.5}
     assert_equal expected, @stat_tracker.average_goals_by_season
   end
 
   def test_it_calculates_lowest_total_score
-    assert_equal 3, @stat_tracker.lowest_total_score
+    assert_equal 1, @stat_tracker.lowest_total_score
   end
 
   def test_it_finds_biggest_blowout
@@ -86,34 +79,36 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_gets_game_count_by_venue
-    skip
-    expected = [["TD Garden", 3], ["Madison Square Garden", 2], ["CONSOL Energy Center", 1]]
+    expected = [["TD Garden", 3], ["Madison Square Garden", 2], ["Honda Center", 1], ["Scottrade Center", 2], ["United Center", 2]]
 
     assert_equal expected, @stat_tracker.game_count_by_venue
   end
 
   def test_it_gets_venue_with_most_games
-    skip
     assert_equal "TD Garden", @stat_tracker.most_popular_venue
   end
 
   def test_it_gets_venue_with_fewest_games
-    skip
-    assert_equal "CONSOL Energy Center", @stat_tracker.least_popular_venue
+    assert_equal "Honda Center", @stat_tracker.least_popular_venue
   end
 
   def test_it_gets_game_count_by_season
-    expected = { "20122013" => 6, "20132014" => 1}
+    expected = {"20122013" => 6, "20152016" => 4}
 
     assert_equal expected, @stat_tracker.count_of_games_by_season
   end
 
-  def test_it_gets_busiest_season
-    assert_equal "20122013", @stat_tracker.season_with_most_games
+  def test_it_gets_season_with_most_games
+    assert_equal 20122013, @stat_tracker.season_with_most_games
   end
 
-  def test_it_gets_least_busy_season
-    assert_equal "20132014", @stat_tracker.season_with_fewest_games
+  def test_it_gets_season_with_fewest_games
+    assert_equal 20152016, @stat_tracker.season_with_fewest_games
+  end
+
+  def test_it_gets_games_by_season
+    expected = {"20122013" => @stat_tracker.games[0..5], "20152016" => @stat_tracker.games[6..9]}
+    assert_equal expected, @stat_tracker.games_by_season
   end
 
 end

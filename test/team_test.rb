@@ -29,11 +29,11 @@ class TeamTest < Minitest::Test
 
   def test_it_can_provide_info
     expected = {
-                franchise_id: "23",
-                short_name: "New Jersey",
-                team_name: "Devils",
-                abbreviation: "NJD",
-                link: "/api/v1/teams/1"
+                franchise_id: "6",
+                short_name: "Boston",
+                team_name: "Bruins",
+                abbreviation: "BOS",
+                link: "/api/v1/teams/6"
     }
 
     test_team = @stat_tracker.teams[0]
