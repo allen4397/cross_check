@@ -3,7 +3,8 @@ require 'pry'
 
 class Team
 
-  attr_reader :team_id
+  attr_reader :team_id,
+              :team_name
 
   def initialize(team_info)
     @team_id = team_info[:team_id]

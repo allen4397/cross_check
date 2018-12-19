@@ -111,4 +111,7 @@ class StatTrackerTest < Minitest::Test
     assert_equal expected, @stat_tracker.games_by_season
   end
 
+  def test_it_can_calculate_highest_scoring_visitor
+    assert_equal "Blues", @stat_tracker.highest_scoring_visitor
+  end
 end

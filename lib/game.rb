@@ -5,7 +5,9 @@ class Game
               :season,
               :outcome,
               :away_team_id,
-              :home_team_id
+              :home_team_id,
+              :away_goals,
+              :home_goals
 
   def initialize(game_info)
     @away_goals = game_info[:away_goals].to_i

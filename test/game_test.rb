@@ -42,6 +42,6 @@ class GameTest < Minitest::Test
     game = @stat_tracker.games[0]
 
     assert_equal 1, game.score_difference
-  end 
+  end
 
 end

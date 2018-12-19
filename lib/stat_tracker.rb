@@ -138,4 +138,25 @@ class StatTracker
     end
     (games_won_by_visitor.count.to_f / games.count * 100).round(2)
   end
+
+  def highest_scoring_visitor
+    highest_scoring_away_team = teams.max_by do |team|
+      total_away_points = games.sum do |game|
+        if team.team_id == game.away_team_id
+          game.away_goals
+        else
+          0
+        end
+      end
+      games_played_as_visitor = games.count do |game|
+        game.away_team_id == team.team_id
+      end
+      if games_played_as_visitor != 0
+        total_away_points.to_f / games_played_as_visitor
+      else
+        0
+      end
+    end
+    highest_scoring_away_team.team_name
+  end
 end
