@@ -9,7 +9,7 @@ class StatTrackerTest < Minitest::Test
   def setup
     game_path = './data/test_game.csv'
     team_path = './data/test_team.csv'
-    game_teams_path = './data/test_game_teams_stats.csv'
+    game_teams_path = './data/test_game_team_stats.csv'
 
     @locations = {
      games: game_path,
@@ -31,13 +31,18 @@ class StatTrackerTest < Minitest::Test
     assert_equal 10, @stat_tracker.games.count
   end
 
-  def test_it_can_calculate_highest_total_score
-    assert_equal 7, @stat_tracker.highest_total_score
-  end
-
   def test_it_creates_teams_off_csv
     assert_instance_of Team, @stat_tracker.teams[0]
     assert_equal 6, @stat_tracker.teams.count
+  end
+
+  def test_it_creates_game_teams_off_csv
+    assert_instance_of GameTeam, @stat_tracker.game_teams[0]
+    assert_equal 20, @stat_tracker.game_teams.count
+  end
+
+  def test_it_can_calculate_highest_total_score
+    assert_equal 7, @stat_tracker.highest_total_score
   end
 
   def test_it_can_calculate_percentage_of_games_won_by_home_team
@@ -109,6 +114,32 @@ class StatTrackerTest < Minitest::Test
   def test_it_gets_games_by_season
     expected = {"20122013" => @stat_tracker.games[0..5], "20152016" => @stat_tracker.games[6..9]}
     assert_equal expected, @stat_tracker.games_by_season
+  end
+
+  def test_it_counts_teams
+    assert_equal 6, @stat_tracker.count_of_teams
+  end
+
+  def test_it_gets_games_by_team
+
+  end
+
+  def test_it_gets_team_total_score
+    skip
+  end
+
+  def test_it_gets_games_by_team_id
+    skip
+    expected = {"3" => [@stat_tracker.games[0..4]]}
+    assert_equal expected, @stat_tracker.games_by_team_id("3")
+  end
+
+  def test_it_gets_game_count_by_team_id
+    skip
+  end
+
+  def test_it_gets_best_offense_by_team_name
+    skip
   end
 
 end

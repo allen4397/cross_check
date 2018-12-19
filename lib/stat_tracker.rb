@@ -1,18 +1,21 @@
 require 'csv'
 require_relative 'game'
 require_relative 'team'
+require_relative 'game_team'
 
 
 class StatTracker
   attr_reader :games,
-              :teams
+              :teams,
+              :game_teams
 
   def initialize(info_hash)
     @games = []
     game_instance(info_hash[:games])
     @teams = []
     team_instance(info_hash[:teams])
-
+    @game_teams = []
+    game_team_instance(info_hash[:game_teams])
   end
 
   def self.from_csv(data)
@@ -25,17 +28,23 @@ class StatTracker
     end
   end
 
+  def team_instance(team_file)
+    CSV.foreach(team_file, headers: true, header_converters: :symbol) do |row|
+      @teams << Team.new(row)
+    end
+  end
+
+  def game_team_instance(game_team_file)
+    CSV.foreach(game_team_file, headers: true, header_converters: :symbol) do |row|
+      @game_teams << GameTeam.new(row)
+    end
+  end
+
   def highest_total_score
     max_game = @games.max_by do |game|
       game.total_score
     end
     max_game.total_score
-  end
-
-  def team_instance(team_file)
-    CSV.foreach(team_file, headers: true, header_converters: :symbol) do |row|
-      @teams << Team.new(row)
-    end
   end
 
   def percentage_home_wins
@@ -138,4 +147,17 @@ class StatTracker
     end
     (games_won_by_visitor.count.to_f / games.count * 100).round(2)
   end
+
+  def count_of_teams
+    @teams.count
+  end
+
+  def get_games_by_team
+    
+  end
+
+  def team_total_score
+
+  end
+
 end
