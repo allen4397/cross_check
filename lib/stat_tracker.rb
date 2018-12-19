@@ -61,20 +61,20 @@ class StatTracker
   end
 
   def games_by_season
-    games_by_season = @games.group_by do |game|
+    @games.group_by do |game|
       game.season
     end
   end
 
   def average_goals_by_season
-    #GUYS YOU ARE WORKING ON FIXING THIS RIGHT NOW!
     average_by_season = {}
     games_by_season.each do |season, games|
-      games_scores = v.inject(0) do |sum, game|
+      total_score_for_season = games.inject(0) do |sum, game|
         sum + game.total_score
       end
-      hash[k] = (games_scores.to_f/hash.values.flatten.length.to_f).round(2)
+      average_by_season[season] = (total_score_for_season.to_f/games.flatten.count).round(2)
     end
+    average_by_season
   end
 
   def lowest_total_score
@@ -115,6 +115,7 @@ class StatTracker
   end
 
   def count_of_games_by_season
+    game_count_by_season = {}
     games_by_season.each do |season, games|
       game_count_by_season[season] = games.count
     end
@@ -123,12 +124,12 @@ class StatTracker
 
   def season_with_most_games
     highest_count = count_of_games_by_season.values.max
-    count_of_games_by_season.key(highest_count)
+    count_of_games_by_season.key(highest_count).to_i
   end
 
   def season_with_fewest_games
     lowest_count = count_of_games_by_season.values.min
-    count_of_games_by_season.key(lowest_count)
+    count_of_games_by_season.key(lowest_count).to_i
   end
 
   def percentage_visitor_wins

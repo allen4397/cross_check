@@ -27,18 +27,15 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_creates_games_off_csv
-    skip
     assert_instance_of Game, @stat_tracker.games[0]
     assert_equal 8, @stat_tracker.games.count
   end
 
   def test_it_can_calculate_highest_total_score
-
     assert_equal 7, @stat_tracker.highest_total_score
   end
 
   def test_it_creates_teams_off_csv
-    skip
     assert_instance_of Team, @stat_tracker.teams[0]
     assert_equal 4, @stat_tracker.teams.count
   end
@@ -62,17 +59,14 @@ class StatTrackerTest < Minitest::Test
 
 
     assert_equal expected, @stat_tracker.team_info("3")
-
   end
 
   def test_it_can_calculate_average_goals_per_game
-
-    assert_equal 4.83, @stat_tracker.average_goals_per_game
+    assert_equal 5.0, @stat_tracker.average_goals_per_game
   end
 
   def test_it_can_calculate_average_goals_by_season
-    skip
-    # expected = {"20122013" => }
+    expected = {"20122013" => 5.5, "20152016" => 4.5}
     assert_equal expected, @stat_tracker.average_goals_by_season
   end
 
@@ -85,8 +79,7 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_gets_game_count_by_venue
-    skip
-    expected = [["TD Garden", 3], ["Madison Square Garden", 2], ["CONSOL Energy Center", 1]]
+    expected = [["TD Garden", 2], ["Madison Square Garden", 2], ["Scottrade Center", 2], ["United Center", 2]]
 
     assert_equal expected, @stat_tracker.game_count_by_venue
   end
@@ -108,12 +101,13 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_gets_season_with_most_games
-    assert_equal "20122013", @stat_tracker.season_with_most_games
+    skip
+    assert_equal 20122013, @stat_tracker.season_with_most_games
   end
 
   def test_it_gets_season_with_fewest_games
     skip
-    assert_equal "20132014", @stat_tracker.season_with_fewest_games
+    assert_equal 20132014, @stat_tracker.season_with_fewest_games
   end
 
   def test_it_gets_games_by_season
