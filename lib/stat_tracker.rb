@@ -152,12 +152,90 @@ class StatTracker
     @teams.count
   end
 
-  def get_games_by_team
-    
+  def games_by_all_team_ids
+    @game_teams.group_by do |game_team|
+      game_team.team_id
+    end
   end
 
-  def team_total_score
+  def games_by_team_id(team_id)
+    games_by_all_team_ids[team_id]
+  end
 
+  def team_total_score(team_id)
+    games_by_team_id(team_id).sum do |game|
+      game.goals.to_i
+    end
+  end
+
+  def game_count_by_team_id(team_id)
+    games_by_team_id(team_id).count
+  end
+
+  def average_score_by_team_id(team_id)
+    team_total_score(team_id).to_f / game_count_by_team_id(team_id).to_f
+  end
+
+  def best_offense_by_team_name
+    best_team = @teams.max_by do |team|
+      average_score_by_team_id(team.team_id)
+    end
+    return best_team.team_name
+  end
+
+  def worst_offense_by_team_name
+    worst_team = @teams.min_by do |team|
+      average_score_by_team_id(team.team_id)
+    end
+    return worst_team.team_name
+  end
+
+  def get_opponent_team_game_ids(team_id)
+    games_by_team_id(team_id).map do |g_t|
+      g_t.game_id
+    end
+  end
+
+  def get_opponent_game_teams(team_id)
+    get_opponent_team_game_ids(team_id).map do |game_id|
+      game_teams.find do |g_t|
+        g_t.game_id == game_id && g_t.team_id != team_id
+      end
+    end
+  end
+
+  def team_opponent_goals(team_id)
+    get_opponent_game_teams(team_id).sum do |g_t|
+      g_t.goals.to_i
+    end
+  end
+
+  def all_teams_opponent_averages
+    all = {}
+    @teams.each do |team|
+      all[team.team_id] = (team_opponent_goals(team.team_id))/game_count_by_team_id(team.team_id).to_f
+    end
+    return all
+  end
+
+  def get_team_name_from_id(team_id)
+    team_name = nil
+    @teams.each do |team|
+      if team.team_id == team_id
+        team_name = team.team_name
+      end
+    end
+    return team_name
+  end
+
+  def best_defense
+    team_id = all_teams_opponent_averages.key(all_teams_opponent_averages.values.min)
+    get_team_name_from_id(team_id)
+  end
+
+  def worst_defense
+    team_id = all_teams_opponent_averages.key(all_teams_opponent_averages.values.max)
+    get_team_name_from_id(team_id)
   end
 
 end
