@@ -9,6 +9,7 @@ class Game
     @venue = game_info[:venue]
     @season = game_info[:season]
     @outcome = game_info[:outcome]
+
   end
 
   def total_score
