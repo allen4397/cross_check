@@ -179,4 +179,52 @@ class StatTrackerTest < Minitest::Test
     team_1.stubs(:team_name).returns("The Mighty Ducks")
     assert_equal "The Mighty Ducks", @stat_tracker.biggest_bust("20122013")
   end
+
+  def test_it_can_calculate_team_with_biggest_surprise
+    team_1 = mock("1")
+    team_2 = mock("2")
+    team_3 = mock("3")
+    team_4 = mock("4")
+
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+    game_4 = mock
+
+    @stat_tracker.teams = [team_1, team_2, team_3, team_4]
+    @stat_tracker.games = [game_1, game_2, game_3, game_4]
+
+    game_1.stubs(:season).returns("20122013")
+    game_2.stubs(:season).returns("20122013")
+    game_3.stubs(:season).returns("20122013")
+    game_4.stubs(:season).returns("20122013")
+
+    game_1.stubs(:type).returns("P")
+    game_2.stubs(:type).returns("P")
+    game_3.stubs(:type).returns("R")
+    game_4.stubs(:type).returns("R")
+
+    game_1.stubs(:outcome).returns("away")
+    game_2.stubs(:outcome).returns("away")
+    game_3.stubs(:outcome).returns("away")
+    game_4.stubs(:outcome).returns("home")
+
+    game_1.stubs(:away_team_id).returns("1")
+    game_2.stubs(:away_team_id).returns("2")
+    game_3.stubs(:home_team_id).returns("3")
+    game_4.stubs(:home_team_id).returns("4")
+
+    game_1.stubs(:home_team_id).returns("4")
+    game_2.stubs(:home_team_id).returns("3")
+    game_3.stubs(:away_team_id).returns("2")
+    game_4.stubs(:away_team_id).returns("1")
+
+    team_1.stubs(:team_id).returns("1")
+    team_2.stubs(:team_id).returns("2")
+    team_3.stubs(:team_id).returns("3")
+    team_4.stubs(:team_id).returns("4")
+
+    team_4.stubs(:team_name).returns("Devils")
+    assert_equal "Devils", @stat_tracker.biggest_surprise("20122013")
+  end
 end
