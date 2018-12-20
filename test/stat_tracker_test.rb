@@ -121,6 +121,7 @@ class StatTrackerTest < Minitest::Test
                   "16" => 0.0
 
     }
+    binding.pry
     assert_equal expected, @stat_tracker.home_win_percentage_per_team
   end
 
