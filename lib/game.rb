@@ -5,7 +5,8 @@ class Game
               :season,
               :outcome,
               :away_team_id,
-              :home_team_id
+              :home_team_id,
+              :type
 
 
   def initialize(game_info)

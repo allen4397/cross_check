@@ -4,14 +4,16 @@ require_relative 'team'
 
 
 class StatTracker
-  attr_reader :games,
-              :teams
+  attr_reader :games
+
+  attr_accessor :teams
 
   def initialize(info_hash)
     @games = []
     game_instance(info_hash[:games])
     @teams = []
     team_instance(info_hash[:teams])
+    assign_percentages_to_teams
   end
 
   def self.from_csv(data)
@@ -139,54 +141,55 @@ class StatTracker
   end
 
 
+  def home_win_percentages(team_id, games)
+    games_won_at_home =  games.count do |game|
+      game.home_team_id == team_id && game.outcome.include?("home")
+    end
+    if games.length != 0
+      return (games_won_at_home.to_f / games.length) * 100.0
+    else
+      return 0.0
+    end
+  end
+
+  def away_win_percentages(team_id, games)
+    games_won_away =  games.count do |game|
+      game.away_team_id == team_id && game.outcome.include?("away")
+    end
+    if games.length != 0
+      return (games_won_away.to_f / games.length) * 100.0
+    else
+      return 0.0
+    end
+  end
+
+
   def home_win_percentage_per_team
     home_win_percentage = Hash.new(0)
 
-    games_played_at_home_per_team = {}
     games_played_at_home_per_team = @games.group_by do |game|
       game.home_team_id
     end
 
     games_played_at_home_per_team.each do |home_team_id, games|
-
-      games_won = games.inject(0) do |sum, game_outcome|
-        if game_outcome.outcome.include?("home win")
-          sum + 1
-        else
-          sum
-        end
-      end #ends games_won
-
-      average = (games_won/games.length.to_f) * 100.0
-      home_win_percentage[home_team_id] = average
-
+      home_win_percentage[home_team_id] = home_win_percentages(home_team_id, games)
     end
     home_win_percentage
-  end
 
+  end
 
   def away_win_percentage_per_team
     away_win_percentage = Hash.new(0)
 
-    games_played_away_per_team = {}
     games_played_away_per_team = @games.group_by do |game|
       game.away_team_id
     end
 
     games_played_away_per_team.each do |away_team_id, games|
-
-      games_won = games.inject(0) do |sum, game_outcome|
-        if game_outcome.outcome.include?("away win")
-          sum + 1
-        else
-          sum
-        end
-      end #ends games_won
-
-      average = (games_won/games.length.to_f) * 100.0
-      away_win_percentage[away_team_id] = average
+      away_win_percentage[away_team_id] = away_win_percentages(away_team_id,games)
     end
     away_win_percentage
+
   end
 
   def assign_percentages_to_teams
@@ -201,7 +204,6 @@ end
   end
 
   def best_fans
-    assign_percentages_to_teams
     best_fans_team = @teams.max_by do |team|
       team.home_win_percentage - team.away_win_percentage
     end
@@ -209,8 +211,6 @@ end
   end
 
   def worst_fans
-    assign_percentages_to_teams
-
     worst_fans_teams = @teams.select do |team|
       team.away_win_percentage > team.home_win_percentage
     end
@@ -220,11 +220,29 @@ end
     end
   end
 
-  def win_percentage(team_games_hash)
-    team_games_hash.each do |
+
+def games_by_season_type(season)
+
+  games_by_type_of_season = Hash.new
+
+  games_in_season = games_by_season[season_id]
+
+  preseason = games_in_season.select do |game|
+    game.type == "P"
   end
-  def team_win_percentage_per_season
+
+  regular_season = games_in_season.select do |game|
+    game.type == "R"
   end
+
+  games_by_type_of_season[:preseason] = preseason
+  games_by_type_of_season[:regular_season] = regular_season
+
+  games_by_type_of_season
+
+end
+
+
 
 
 

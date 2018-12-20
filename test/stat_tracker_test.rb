@@ -1,6 +1,7 @@
 require './test/test_helper'
 require 'minitest/autorun'
 require 'minitest/pride'
+require 'mocha/minitest'
 require './lib/stat_tracker'
 require 'pry'
 
@@ -144,14 +145,56 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_can_return_the_best_fans
+    skip
+    team_1 = mock
+    team_2 = mock
+    team_3 = mock
+
+    team_1.expects(:team_name).returns("Bruins")
+
+    team_1.expects(:home_win_percentage).returns(75)
+    team_1.expects(:away_win_percentage).returns(25)
+
+    team_2.expects(:home_win_percentage).returns(30)
+    team_2.expects(:away_win_percentage).returns(0)
+
+    team_3.expects(:home_win_percentage).returns(20)
+    team_3.expects(:away_win_percentage).returns(50)
+
+
+    @stat_tracker.teams = []
+    @stat_tracker.teams = [team_1, team_2, team_3]
 
     assert_equal "Bruins", @stat_tracker.best_fans
-    binding.pry
+
   end
 
   def test_it_can_return_array_of_worst_fans
+    skip
 
-  assert_equal ["Blackhawks", "Red Wings"], @stat_tracker.worst_fans
+    team_1 = mock
+    team_2 = mock
+    team_3 = mock
+
+    team_3.expects(:team_name).returns("Blackhawks")
+    team_1.expects(:team_name).returns("Bruins")
+
+
+    team_1.expects(:home_win_percentage).returns(25)
+    team_1.expects(:away_win_percentage).returns(75)
+
+    team_2.expects(:home_win_percentage).returns(30)
+    team_2.expects(:away_win_percentage).returns(0)
+
+    team_3.expects(:home_win_percentage).returns(20)
+    team_3.expects(:away_win_percentage).returns(50)
+
+
+    @stat_tracker.teams = []
+    @stat_tracker.teams = [team_1, team_2, team_3]
+    binding.pry
+
+    assert_equal ["Bruins", "Blackhawks"], @stat_tracker.worst_fans
   end
 
 

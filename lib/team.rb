@@ -19,6 +19,8 @@ class Team
     @link = team_info[:link]
     @away_win_percentage = 0
     @home_win_percentage = 0
+    @pre_season_win_percentage = 0
+    @post_season_win_percentage = 0
   end
 
   def provide_info
@@ -28,6 +30,8 @@ class Team
                   abbreviation: @abbreviation,
                   link: @link}
   end
+
+  
 
 
 
