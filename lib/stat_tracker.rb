@@ -267,21 +267,44 @@ def win_percentage(team_id,games)
   away_win_percentages(team_id, games) + home_win_percentages(team_id, games)
 end
 
+def goals_scored(team_id,games)
+  goals = 0
+  games.each do |game|
+    if game.away_team_id == team_id
+      goals =+ game.away_goals
+    elsif game.home_team_id == team_id
+      goals += game.home_goals
+    end
+  return goals
+end
+end
+
+
 def season_summary(season_id, team_id)
   summary = {}
   by_season_type_for_given_team = games_by_season_type(season_id, team_id)
   preseason_stats = {}
+  regular_season_stats = {}
 
-  preseason_wins = win_percentage(team_id,by_season_type_for_given_team[:preseason])
+  preseason_games = by_season_type_for_given_team[:preseason]
+  regular_games = by_season_type_for_given_team[:regular_season]
 
-  regular_wins = win_percentage(team_id, by_season_type_for_given_team[:regular_season])
+  preseason_wins = win_percentage(team_id, preseason_games)
+  regular_wins = win_percentage(team_id, regular_games)
 
-  preseason_goals = by_season_type_for_given_team[:preseason].sum{|game| game.total_score}
+  preseason_goals = goals_scored(team_id, preseason_games)
+  regular_goals = goals_scored(team_id,regular_games)
 
+  preseason_stats[:win_percentage] = preseason_wins
+  preseason_stats[:goals_scored] = preseason_goals
 
-  summary[:preseason]
+  regular_season_stats[:win_percentage] = regular_wins
+  regular_season_stats[:goals_scored] = regular_goals
 
+  summary[:preseason] = preseason_stats
+  summary[:regular_season] = regular_season_stats
 
+  summary
 end
 
 
