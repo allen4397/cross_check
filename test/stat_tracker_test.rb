@@ -112,6 +112,16 @@ class StatTrackerTest < Minitest::Test
     assert_equal expected, @stat_tracker.games_by_season
   end
 
+  def test_it_can_return_home_win_percentage_for_a_team_in_a_selection_of_games
+
+    assert_equal 100.0, @stat_tracker.home_win_percentages("6", @stat_tracker.games)
+  end
+
+  def test_it_can_return_away_win_percentage_for_a_team_in_a_selection_of_games
+
+    assert_equal 50.0, @stat_tracker.away_win_percentages("6", @stat_tracker.games)
+  end
+
   def test_it_gets_home_win_percentage_for_all_teams
 
     expected = { "6" => 100.0,
@@ -121,9 +131,10 @@ class StatTrackerTest < Minitest::Test
                   "16" => 0.0
 
     }
-    binding.pry
     assert_equal expected, @stat_tracker.home_win_percentage_per_team
   end
+
+
 
   def test_it_gets_away_win_percentage_for_all_teams
 
@@ -146,7 +157,7 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_can_return_the_best_fans
-    skip
+
     team_1 = mock
     team_2 = mock
     team_3 = mock
@@ -171,7 +182,6 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_can_return_array_of_worst_fans
-    skip
 
     team_1 = mock
     team_2 = mock
@@ -193,11 +203,44 @@ class StatTrackerTest < Minitest::Test
 
     @stat_tracker.teams = []
     @stat_tracker.teams = [team_1, team_2, team_3]
-    binding.pry
 
     assert_equal ["Bruins", "Blackhawks"], @stat_tracker.worst_fans
   end
 
+  def test_it_can_group_games_by_season_and_type_for_a_team
+
+    game_1 = @stat_tracker.games.find do |game|
+      game.game_id == "2015030161"
+    end
+
+    game_2 = @stat_tracker.games.find do |game|
+      game.game_id == "2015030162"
+    end
+
+    game_3 = @stat_tracker.games.find do |game|
+      game.game_id == "2015030163"
+    end
+
+    game_4 = @stat_tracker.games.find do |game|
+      game.game_id == "2015030164"
+    end
+
+    expected = {preseason: [game_1, game_2, game_3, game_4],
+                regular_season: []}
+
+    assert_equal expected, @stat_tracker.games_by_season_type("20152016","16")
+
+  end
+
+def test_it_can_calculate_win_percentage_for_a_team_across_given_games
+
+  assert_equal 80.0 , @stat_tracker.win_percentage("6", @stat_tracker.games)
+end
+
+def test_it_can_calculate_goals_scored
+  binding.pry
+  assert_equal 16, @stat_tracker.goals_scored("6",@stat_tracker.games)
+end
 
 
 end

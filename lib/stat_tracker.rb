@@ -4,9 +4,9 @@ require_relative 'team'
 
 
 class StatTracker
-  attr_reader :games
 
-  attr_accessor :teams
+  attr_accessor :teams,
+                :games
 
   def initialize(info_hash)
     @games = []
@@ -142,22 +142,31 @@ class StatTracker
 
 
   def home_win_percentages(team_id, games)
-    games_won_at_home =  games.count do |game|
-      game.home_team_id == team_id && game.outcome.include?("home")
+    games_played_at_home = games.select do |game|
+      game.home_team_id == team_id
     end
-    if games.length != 0
-      return (games_won_at_home.to_f / games.length) * 100.0
+
+    games_won_at_home =  games_played_at_home.count do |game|
+      game.outcome.include?("home")
+    end
+    if games_played_at_home.length != 0
+      return (games_won_at_home.to_f / games_played_at_home.length) * 100.0
     else
       return 0.0
     end
   end
 
   def away_win_percentages(team_id, games)
-    games_won_away =  games.count do |game|
-      game.away_team_id == team_id && game.outcome.include?("away")
+    games_played_away = games.select do |game|
+      game.away_team_id == team_id
     end
-    if games.length != 0
-      return (games_won_away.to_f / games.length) * 100.0
+
+    games_won_away =  games_played_away.count do |game|
+      game.outcome.include?("away")
+    end
+
+    if games_played_away.length != 0
+      return (games_won_away.to_f / games_played_away.length) * 100.0
     else
       return 0.0
     end
@@ -264,7 +273,7 @@ def games_by_season_type(season_id, team_id)
 end
 
 def win_percentage(team_id,games)
-  away_win_percentages(team_id, games) + home_win_percentages(team_id, games)
+  (away_win_percentages(team_id, games) + home_win_percentages(team_id, games)).to_f/2
 end
 
 def goals_scored(team_id,games)
@@ -272,11 +281,11 @@ def goals_scored(team_id,games)
   games.each do |game|
     if game.away_team_id == team_id
       goals =+ game.away_goals
-    elsif game.home_team_id == team_id
+    else
       goals += game.home_goals
     end
-  return goals
 end
+goals
 end
 
 
