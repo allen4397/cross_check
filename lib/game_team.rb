@@ -12,8 +12,4 @@ class GameTeam
     @shots = game_team_info[:shots]
   end
 
-  def missed_shots
-    @shots.to_i - @goals.to_i
-  end
-
 end
