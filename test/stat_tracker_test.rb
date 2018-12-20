@@ -120,6 +120,174 @@ class StatTrackerTest < Minitest::Test
     assert_equal expected, @stat_tracker.games_by_season
   end
 
+  def test_it_can_calculate_highest_scoring_visitor
+    assert_equal "Blues", @stat_tracker.highest_scoring_visitor
+  end
+
+  def test_it_can_calculate_highest_scoring_home_team
+    assert_equal "Bruins", @stat_tracker.highest_scoring_home_team
+  end
+
+  def test_it_can_calculate_lowest_scoring_visitor
+    assert_equal "Blackhawks", @stat_tracker.lowest_scoring_visitor
+  end
+
+  def test_it_can_calculate_lowest_scoring_home_team
+    assert_equal "Blues", @stat_tracker.lowest_scoring_home_team
+  end
+
+  def test_it_can_calculate_winningest_team
+    assert_equal "Red Wings", @stat_tracker.winningest_team
+  end
+
+  def test_it_can_calculate_team_with_biggest_bust
+    team_1 = mock
+    team_2 = mock
+    team_3 = mock
+    team_4 = mock
+
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+    game_4 = mock
+
+    @stat_tracker.teams = [team_1, team_2, team_3, team_4]
+    @stat_tracker.games = [game_1, game_2, game_3, game_4]
+
+    game_1.stubs(:season).returns("20122013")
+    game_2.stubs(:season).returns("20122013")
+    game_3.stubs(:season).returns("20122013")
+    game_4.stubs(:season).returns("20122013")
+
+    game_1.stubs(:type).returns("P")
+    game_2.stubs(:type).returns("P")
+    game_3.stubs(:type).returns("R")
+    game_4.stubs(:type).returns("R")
+
+    game_1.stubs(:outcome).returns("away")
+    game_2.stubs(:outcome).returns("away")
+    game_3.stubs(:outcome).returns("away")
+    game_4.stubs(:outcome).returns("home")
+
+    game_1.stubs(:away_team_id).returns("1")
+    game_2.stubs(:away_team_id).returns("2")
+    game_3.stubs(:home_team_id).returns("3")
+    game_4.stubs(:home_team_id).returns("4")
+
+    game_1.stubs(:home_team_id).returns("4")
+    game_2.stubs(:home_team_id).returns("3")
+    game_3.stubs(:away_team_id).returns("2")
+    game_4.stubs(:away_team_id).returns("1")
+
+    team_1.stubs(:team_id).returns("1")
+    team_2.stubs(:team_id).returns("2")
+    team_3.stubs(:team_id).returns("3")
+    team_4.stubs(:team_id).returns("4")
+
+    team_1.stubs(:team_name).returns("The Mighty Ducks")
+    assert_equal "The Mighty Ducks", @stat_tracker.biggest_bust("20122013")
+  end
+
+  def test_it_can_calculate_team_with_biggest_surprise
+    team_1 = mock("1")
+    team_2 = mock("2")
+    team_3 = mock("3")
+    team_4 = mock("4")
+
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+    game_4 = mock
+
+    @stat_tracker.teams = [team_1, team_2, team_3, team_4]
+    @stat_tracker.games = [game_1, game_2, game_3, game_4]
+
+    game_1.stubs(:season).returns("20122013")
+    game_2.stubs(:season).returns("20122013")
+    game_3.stubs(:season).returns("20122013")
+    game_4.stubs(:season).returns("20122013")
+
+    game_1.stubs(:type).returns("P")
+    game_2.stubs(:type).returns("P")
+    game_3.stubs(:type).returns("R")
+    game_4.stubs(:type).returns("R")
+
+    game_1.stubs(:outcome).returns("away")
+    game_2.stubs(:outcome).returns("away")
+    game_3.stubs(:outcome).returns("away")
+    game_4.stubs(:outcome).returns("home")
+
+    game_1.stubs(:away_team_id).returns("1")
+    game_2.stubs(:away_team_id).returns("2")
+    game_3.stubs(:home_team_id).returns("3")
+    game_4.stubs(:home_team_id).returns("4")
+
+    game_1.stubs(:home_team_id).returns("4")
+    game_2.stubs(:home_team_id).returns("3")
+    game_3.stubs(:away_team_id).returns("2")
+    game_4.stubs(:away_team_id).returns("1")
+
+    team_1.stubs(:team_id).returns("1")
+    team_2.stubs(:team_id).returns("2")
+    team_3.stubs(:team_id).returns("3")
+    team_4.stubs(:team_id).returns("4")
+
+    team_4.stubs(:team_name).returns("Devils")
+    assert_equal "Devils", @stat_tracker.biggest_surprise("20122013")
+  end
+
+  def test_it_can_summarize_the_season
+    team_1 = mock("1")
+    team_2 = mock("2")
+
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+    game_4 = mock
+
+    @stat_tracker.teams = [team_1, team_2]
+    @stat_tracker.games = [game_1, game_2, game_3, game_4]
+
+    game_1.stubs(:season).returns("20122013")
+    game_2.stubs(:season).returns("20122013")
+    game_3.stubs(:season).returns("20122013")
+    game_4.stubs(:season).returns("20122013")
+
+    game_1.stubs(:type).returns("P")
+    game_2.stubs(:type).returns("P")
+    game_3.stubs(:type).returns("R")
+    game_4.stubs(:type).returns("R")
+
+    game_1.stubs(:outcome).returns("away") # 1   3 to 1
+    game_2.stubs(:outcome).returns("away") # 2    1 to 2
+    game_3.stubs(:outcome).returns("away") # 2    3 to 4
+    game_4.stubs(:outcome).returns("home") # 2    2 to 3
+
+    game_1.stubs(:away_team_id).returns("1")
+    game_2.stubs(:away_team_id).returns("2")
+    game_3.stubs(:home_team_id).returns("1")
+    game_4.stubs(:home_team_id).returns("2")
+
+    game_1.stubs(:home_team_id).returns("2")
+    game_2.stubs(:home_team_id).returns("1")
+    game_3.stubs(:away_team_id).returns("2")
+    game_4.stubs(:away_team_id).returns("1")
+
+    team_1.stubs(:team_id).returns("1")
+    team_2.stubs(:team_id).returns("2")
+
+    expected = {preseason:      {win_percentage: 50.0,
+                                goals_scored: 4,
+                                goals_against: 3},
+
+                regular_season: {win_percentage: 0.0,
+                                goals_scored: 5,
+                                goals_against: 7}
+                }
+                
+    assert_equal expected, @stat_tracker.season_summary("20122013", "1")
+  end
+=======
   def test_it_can_return_home_win_percentage_for_a_team_in_a_selection_of_games
 
     assert_equal 100.0, @stat_tracker.home_win_percentages("6", @stat_tracker.games)
