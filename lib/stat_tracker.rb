@@ -211,21 +211,25 @@ class StatTracker
   end
 
   def all_teams_opponent_averages
-    all = {}
+    all_teams = {}
+
     @teams.each do |team|
-      all[team.team_id] = (team_opponent_goals(team.team_id))/game_count_by_team_id(team.team_id).to_f
+      all_teams[team.team_id] = (team_opponent_goals(team.team_id))/game_count_by_team_id(team.team_id).to_f
     end
-    return all
+
+    all_teams
   end
 
   def get_team_name_from_id(team_id)
     team_name = nil
+
     @teams.each do |team|
       if team.team_id == team_id
         team_name = team.team_name
       end
     end
-    return team_name
+
+    team_name
   end
 
   def best_defense
@@ -237,5 +241,4 @@ class StatTracker
     team_id = all_teams_opponent_averages.key(all_teams_opponent_averages.values.max)
     get_team_name_from_id(team_id)
   end
-
 end
