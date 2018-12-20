@@ -368,8 +368,8 @@ class StatTracker
     end
     largest_increase_in_percentage.team_name
   end
-
-  def season_summary(season_id, team_id)
+  #
+  # def season_summary(season_id, team_id)
     # team method that returns preseason summary hash
     # {team method for preseason_win_percentage
     # team method for preseason_goals_scored
@@ -471,56 +471,60 @@ class StatTracker
     worst_fans_teams = @teams.select do |team|
       team.away_win_percentage > team.home_win_percentage
     end
-    
+
     worst_fans_teams.map do |team|
       team.team_name
     end
   end
 
 
-def games_by_season_type(season_id, team_id)
+  def games_by_season_type(season_id, team_id)
 
-  games_by_type_of_season = Hash.new
-  games_in_season = games_by_season[season_id]
+    games_by_type_of_season = Hash.new
+    games_in_season = games_by_season[season_id]
 
-  preseason = games_in_season.select do |game|
-    game.type == "P"
+    preseason = games_in_season.select do |game|
+      game.type == "P"
+    end
+
+    regular_season = games_in_season.select do |game|
+      game.type == "R"
+    end
+
+    games_by_type_of_season[:preseason] = preseason
+    games_by_type_of_season[:regular_season] = regular_season
+
+    games_by_type_of_season[:preseason].delete_if do |game|
+      game.away_team_id != team_id && game.home_team_id != team_id
+    end
+
+    games_by_type_of_season[:regular_season].delete_if do |game|
+      game.away_team_id != team_id && game.home_team_id != team_id
+    end
+
+    games_by_type_of_season
+
   end
 
-  regular_season = games_in_season.select do |game|
-    game.type == "R"
+  def win_percentage(team_id,games)
+    # (away_win_percentages(team_id, games) + home_win_percentages(team_id, games)).to_f/2
+    team_instance = @teams.find do |team|
+      team.team_id == team_id
+    end
+    team_instance.number_of_games_won(games)/game_count_by_team_id(team_id).to_f * 100
   end
 
-  games_by_type_of_season[:preseason] = preseason
-  games_by_type_of_season[:regular_season] = regular_season
-
-  games_by_type_of_season[:preseason].delete_if do |game|
-    game.away_team_id != team_id && game.home_team_id != team_id
+  def goals_scored(team_id,games)
+    goals = 0
+    games.each do |game|
+      if game.away_team_id == team_id
+        goals =+ game.away_goals
+      else
+        goals += game.home_goals
+      end
+    end
+    goals
   end
-
-  games_by_type_of_season[:regular_season].delete_if do |game|
-    game.away_team_id != team_id && game.home_team_id != team_id
-  end
-
-  games_by_type_of_season
-
-end
-
-def win_percentage(team_id,games)
-  (away_win_percentages(team_id, games) + home_win_percentages(team_id, games)).to_f/2
-end
-
-# def goals_scored(team_id,games)
-#   goals = 0
-#   games.each do |game|
-#     if game.away_team_id == team_id
-#       goals =+ game.away_goals
-#     else
-#       goals += game.home_goals
-#     end
-# end
-# goals
-# end
 #
 #
 # def season_summary(season_id, team_id)

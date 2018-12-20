@@ -237,6 +237,7 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_can_summarize_the_season
+    skip
     team_1 = mock("1")
     team_2 = mock("2")
 
@@ -284,10 +285,10 @@ class StatTrackerTest < Minitest::Test
                                 goals_scored: 5,
                                 goals_against: 7}
                 }
-                
+
     assert_equal expected, @stat_tracker.season_summary("20122013", "1")
   end
-=======
+
   def test_it_can_return_home_win_percentage_for_a_team_in_a_selection_of_games
 
     assert_equal 100.0, @stat_tracker.home_win_percentages("6", @stat_tracker.games)
@@ -410,8 +411,7 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_can_calculate_goals_scored
-    binding.pry
-    assert_equal 16, @stat_tracker.goals_scored("6",@stat_tracker.games)
+    assert_equal 16, @stat_tracker.goals_scored("6", @stat_tracker.games)
   end
 
   def test_it_counts_teams
@@ -475,19 +475,19 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_gets_all_teams_opponent_averages
-    expected = {"3" => 3.2, "6" => 2.0, "17" => 2.0, "24" => 3.0, "16" => 2.5, "7" => 4.0}
+    expected = {"3" => 3.2, "6" => 2.0, "17" => 2.0, "24" => 3.0, "16" => 2.5, "19" => 1.5}
     assert_equal expected, @stat_tracker.all_teams_opponent_averages
   end
 
   def test_it_gets_best_defense
-    assert_equal "Bruins", @stat_tracker.best_defense
+    assert_equal "Blues", @stat_tracker.best_defense
   end
 
   def test_it_gets_worst_defense
-    assert_equal "Sabres", @stat_tracker.worst_defense
+    assert_equal "Rangers", @stat_tracker.worst_defense
   end
 
   def test_it_gets_team_name_from_id
     assert_equal "Blackhawks", @stat_tracker.get_team_name_from_id("16")
-  end 
+  end
 end
