@@ -10,7 +10,7 @@ class StatTrackerTest < Minitest::Test
   def setup
     game_path = './data/test_game.csv'
     team_path = './data/test_team.csv'
-    game_teams_path = './data/test_game_teams_stats.csv'
+    game_teams_path = './data/test_game_team_stats.csv'
 
     @locations = {
      games: game_path,
@@ -28,17 +28,25 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_creates_games_off_csv
+    skip
     assert_instance_of Game, @stat_tracker.games[0]
     assert_equal 10, @stat_tracker.games.count
   end
 
-  def test_it_can_calculate_highest_total_score
-    assert_equal 7, @stat_tracker.highest_total_score
-  end
-
   def test_it_creates_teams_off_csv
+    skip
     assert_instance_of Team, @stat_tracker.teams[0]
     assert_equal 6, @stat_tracker.teams.count
+  end
+
+  def test_it_creates_game_teams_off_csv
+    skip
+    assert_instance_of GameTeam, @stat_tracker.game_teams[0]
+    assert_equal 20, @stat_tracker.game_teams.count
+  end
+
+  def test_it_can_calculate_highest_total_score
+    assert_equal 7, @stat_tracker.highest_total_score
   end
 
   def test_it_can_calculate_percentage_of_games_won_by_home_team
@@ -279,4 +287,207 @@ class StatTrackerTest < Minitest::Test
                 
     assert_equal expected, @stat_tracker.season_summary("20122013", "1")
   end
+=======
+  def test_it_can_return_home_win_percentage_for_a_team_in_a_selection_of_games
+
+    assert_equal 100.0, @stat_tracker.home_win_percentages("6", @stat_tracker.games)
+  end
+
+  def test_it_can_return_away_win_percentage_for_a_team_in_a_selection_of_games
+
+    assert_equal 50.0, @stat_tracker.away_win_percentages("6", @stat_tracker.games)
+  end
+
+  def test_it_gets_home_win_percentage_for_all_teams
+
+    expected = { "6" => 100.0,
+                  "3" => 50.0,
+                  "24" => 0.0,
+                  "19" => 50.0,
+                  "16" => 0.0
+
+    }
+    assert_equal expected, @stat_tracker.home_win_percentage_per_team
+  end
+
+  def test_it_gets_away_win_percentage_for_all_teams
+
+    expected = {  "6" => 50.0,
+                  "3" => 0.0,
+                  "17" => 100.0,
+                  "19" => 100.0,
+                  "16" => 50.0
+
+    }
+    assert_equal expected, @stat_tracker.away_win_percentage_per_team
+  end
+
+  def test_it_can_assign_home_and_away_percentages_to_teams
+
+    @stat_tracker.assign_percentages_to_teams
+
+    assert_equal 100.0, @stat_tracker.teams[0].home_win_percentage
+    assert_equal 0.0, @stat_tracker.teams[1].away_win_percentage
+  end
+
+  def test_it_can_return_the_best_fans
+
+    team_1 = mock
+    team_2 = mock
+    team_3 = mock
+
+    team_1.expects(:team_name).returns("Bruins")
+
+    team_1.expects(:home_win_percentage).returns(75)
+    team_1.expects(:away_win_percentage).returns(25)
+
+    team_2.expects(:home_win_percentage).returns(30)
+    team_2.expects(:away_win_percentage).returns(0)
+
+    team_3.expects(:home_win_percentage).returns(20)
+    team_3.expects(:away_win_percentage).returns(50)
+
+
+    @stat_tracker.teams = []
+    @stat_tracker.teams = [team_1, team_2, team_3]
+
+    assert_equal "Bruins", @stat_tracker.best_fans
+  end
+
+  def test_it_can_return_array_of_worst_fans
+
+    team_1 = mock
+    team_2 = mock
+    team_3 = mock
+
+    team_3.expects(:team_name).returns("Blackhawks")
+    team_1.expects(:team_name).returns("Bruins")
+
+
+    team_1.expects(:home_win_percentage).returns(25)
+    team_1.expects(:away_win_percentage).returns(75)
+
+    team_2.expects(:home_win_percentage).returns(30)
+    team_2.expects(:away_win_percentage).returns(0)
+
+    team_3.expects(:home_win_percentage).returns(20)
+    team_3.expects(:away_win_percentage).returns(50)
+
+    @stat_tracker.teams = []
+    @stat_tracker.teams = [team_1, team_2, team_3]
+
+    assert_equal ["Bruins", "Blackhawks"], @stat_tracker.worst_fans
+  end
+
+  def test_it_can_group_games_by_season_and_type_for_a_team
+
+    game_1 = @stat_tracker.games.find do |game|
+      game.game_id == "2015030161"
+    end
+
+    game_2 = @stat_tracker.games.find do |game|
+      game.game_id == "2015030162"
+    end
+
+    game_3 = @stat_tracker.games.find do |game|
+      game.game_id == "2015030163"
+    end
+
+    game_4 = @stat_tracker.games.find do |game|
+      game.game_id == "2015030164"
+    end
+
+    expected = {preseason: [game_1, game_2, game_3, game_4],
+                regular_season: []}
+
+    assert_equal expected, @stat_tracker.games_by_season_type("20152016","16")
+
+  end
+
+  def test_it_can_calculate_win_percentage_for_a_team_across_given_games
+
+    assert_equal 80.0 , @stat_tracker.win_percentage("6", @stat_tracker.games)
+  end
+
+  def test_it_can_calculate_goals_scored
+    binding.pry
+    assert_equal 16, @stat_tracker.goals_scored("6",@stat_tracker.games)
+  end
+
+  def test_it_counts_teams
+    assert_equal 6, @stat_tracker.count_of_teams
+  end
+
+  def test_it_gets_games_by_all_team_ids
+    skip
+    gt = @stat_tracker.game_teams
+    t3games = [gt[0], gt[2], gt[5], gt[7], gt[8]]
+    t6games = [gt[1], gt[3], gt[4], gt[6], gt[9]]
+    t17games = [gt[10]]
+    t24games = [gt[11]]
+    t16games = [gt[12], gt[14], gt[17], gt[19]]
+    t19games = [gt[13], gt[15], gt[16], gt[18]]
+    expected = {"3"=>t3games, "6"=>t6games, "17"=>t17games, "24"=>t24games, "16"=>t16games, "19"=>t19games}
+    assert_equal expected, @stat_tracker.games_by_all_team_ids
+  end
+
+  def test_it_gets_games_by_team_id
+    gt = @stat_tracker.game_teams
+    t3games = [gt[0], gt[2], gt[5], gt[7], gt[8]]
+    expected = t3games
+    assert_equal expected, @stat_tracker.games_by_team_id("3")
+  end
+
+  def test_it_gets_team_total_score
+    assert_equal 10, @stat_tracker.team_total_score("3")
+  end
+
+  def test_it_gets_game_count_by_team_id
+    assert_equal 5, @stat_tracker.game_count_by_team_id("3")
+  end
+
+  def test_it_gets_average_score_by_team_id
+    assert_equal 2.0, @stat_tracker.average_score_by_team_id("3")
+  end
+
+  def test_it_gets_best_offense_by_team_name
+    #fails due to mismatch between team and team_games
+    assert_equal "Bruins", @stat_tracker.best_offense_by_team_name
+  end
+
+  def test_it_gets_worst_offense_by_team_name
+    #fails due to mismatch between team and team_name
+    assert_equal "Blackhawks", @stat_tracker.worst_offense_by_team_name
+  end
+
+  def test_it_gets_opponnent_game_ids
+    assert_equal ["2012030221", "2012030222", "2012030223", "2012030224", "2012030225"], @stat_tracker.get_opponent_team_game_ids("3")
+  end
+
+  def test_it_gets_opponent_game_teams
+    gt = @stat_tracker.game_teams
+    expected = [gt[1], gt[3], gt[4], gt[6], gt[9]]
+    assert_equal expected, @stat_tracker.get_opponent_game_teams("3")
+  end
+
+  def test_it_gets_opponent_scores
+    assert_equal 16, @stat_tracker.team_opponent_goals("3")
+  end
+
+  def test_it_gets_all_teams_opponent_averages
+    expected = {"3" => 3.2, "6" => 2.0, "17" => 2.0, "24" => 3.0, "16" => 2.5, "7" => 4.0}
+    assert_equal expected, @stat_tracker.all_teams_opponent_averages
+  end
+
+  def test_it_gets_best_defense
+    assert_equal "Bruins", @stat_tracker.best_defense
+  end
+
+  def test_it_gets_worst_defense
+    assert_equal "Sabres", @stat_tracker.worst_defense
+  end
+
+  def test_it_gets_team_name_from_id
+    assert_equal "Blackhawks", @stat_tracker.get_team_name_from_id("16")
+  end 
 end
