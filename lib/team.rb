@@ -1,9 +1,14 @@
 require "csv"
 require 'pry'
+require './lib/stat_tracker'
 
 class Team
 
-  attr_reader :team_id, :team_name
+  attr_reader :team_id,
+              :team_name
+
+  attr_accessor :away_win_percentage,
+                :home_win_percentage
 
   def initialize(team_info)
     @team_id = team_info[:team_id]
@@ -12,6 +17,10 @@ class Team
     @team_name = team_info[:teamname]
     @abbreviation = team_info[:abbreviation]
     @link = team_info[:link]
+    @away_win_percentage = 0
+    @home_win_percentage = 0
+    @pre_season_win_percentage = 0
+    @post_season_win_percentage = 0
   end
 
   def provide_info
@@ -21,5 +30,4 @@ class Team
                   abbreviation: @abbreviation,
                   link: @link}
   end
-
 end

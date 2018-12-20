@@ -1,6 +1,7 @@
 require './test/test_helper'
 require 'minitest/autorun'
 require 'minitest/pride'
+require 'mocha/minitest'
 require './lib/stat_tracker'
 require 'pry'
 
@@ -119,6 +120,132 @@ class StatTrackerTest < Minitest::Test
     assert_equal expected, @stat_tracker.games_by_season
   end
 
+  def test_it_can_return_home_win_percentage_for_a_team_in_a_selection_of_games
+
+    assert_equal 100.0, @stat_tracker.home_win_percentages("6", @stat_tracker.games)
+  end
+
+  def test_it_can_return_away_win_percentage_for_a_team_in_a_selection_of_games
+
+    assert_equal 50.0, @stat_tracker.away_win_percentages("6", @stat_tracker.games)
+  end
+
+  def test_it_gets_home_win_percentage_for_all_teams
+
+    expected = { "6" => 100.0,
+                  "3" => 50.0,
+                  "24" => 0.0,
+                  "19" => 50.0,
+                  "16" => 0.0
+
+    }
+    assert_equal expected, @stat_tracker.home_win_percentage_per_team
+  end
+
+  def test_it_gets_away_win_percentage_for_all_teams
+
+    expected = {  "6" => 50.0,
+                  "3" => 0.0,
+                  "17" => 100.0,
+                  "19" => 100.0,
+                  "16" => 50.0
+
+    }
+    assert_equal expected, @stat_tracker.away_win_percentage_per_team
+  end
+
+  def test_it_can_assign_home_and_away_percentages_to_teams
+
+    @stat_tracker.assign_percentages_to_teams
+
+    assert_equal 100.0, @stat_tracker.teams[0].home_win_percentage
+    assert_equal 0.0, @stat_tracker.teams[1].away_win_percentage
+  end
+
+  def test_it_can_return_the_best_fans
+
+    team_1 = mock
+    team_2 = mock
+    team_3 = mock
+
+    team_1.expects(:team_name).returns("Bruins")
+
+    team_1.expects(:home_win_percentage).returns(75)
+    team_1.expects(:away_win_percentage).returns(25)
+
+    team_2.expects(:home_win_percentage).returns(30)
+    team_2.expects(:away_win_percentage).returns(0)
+
+    team_3.expects(:home_win_percentage).returns(20)
+    team_3.expects(:away_win_percentage).returns(50)
+
+
+    @stat_tracker.teams = []
+    @stat_tracker.teams = [team_1, team_2, team_3]
+
+    assert_equal "Bruins", @stat_tracker.best_fans
+  end
+
+  def test_it_can_return_array_of_worst_fans
+
+    team_1 = mock
+    team_2 = mock
+    team_3 = mock
+
+    team_3.expects(:team_name).returns("Blackhawks")
+    team_1.expects(:team_name).returns("Bruins")
+
+
+    team_1.expects(:home_win_percentage).returns(25)
+    team_1.expects(:away_win_percentage).returns(75)
+
+    team_2.expects(:home_win_percentage).returns(30)
+    team_2.expects(:away_win_percentage).returns(0)
+
+    team_3.expects(:home_win_percentage).returns(20)
+    team_3.expects(:away_win_percentage).returns(50)
+
+    @stat_tracker.teams = []
+    @stat_tracker.teams = [team_1, team_2, team_3]
+
+    assert_equal ["Bruins", "Blackhawks"], @stat_tracker.worst_fans
+  end
+
+  def test_it_can_group_games_by_season_and_type_for_a_team
+
+    game_1 = @stat_tracker.games.find do |game|
+      game.game_id == "2015030161"
+    end
+
+    game_2 = @stat_tracker.games.find do |game|
+      game.game_id == "2015030162"
+    end
+
+    game_3 = @stat_tracker.games.find do |game|
+      game.game_id == "2015030163"
+    end
+
+    game_4 = @stat_tracker.games.find do |game|
+      game.game_id == "2015030164"
+    end
+
+    expected = {preseason: [game_1, game_2, game_3, game_4],
+                regular_season: []}
+
+    assert_equal expected, @stat_tracker.games_by_season_type("20152016","16")
+
+  end
+
+  def test_it_can_calculate_win_percentage_for_a_team_across_given_games
+
+    assert_equal 80.0 , @stat_tracker.win_percentage("6", @stat_tracker.games)
+  end
+
+  def test_it_can_calculate_goals_scored
+    binding.pry
+    assert_equal 16, @stat_tracker.goals_scored("6",@stat_tracker.games)
+  end
+
   def test_it_counts_teams
     assert_equal 6, @stat_tracker.count_of_teams
   end
@@ -195,5 +322,4 @@ class StatTrackerTest < Minitest::Test
   def test_it_gets_team_name_from_id
     assert_equal "Blackhawks", @stat_tracker.get_team_name_from_id("16")
   end 
-
 end

@@ -5,15 +5,17 @@ require_relative 'game_team'
 
 
 class StatTracker
-  attr_reader :games,
-              :teams,
-              :game_teams
+  attr_accessor :teams,
+                :games
+  
+  attr_reader :game_teams
 
   def initialize(info_hash)
     @games = []
     game_instance(info_hash[:games])
     @teams = []
     team_instance(info_hash[:teams])
+    assign_percentages_to_teams
     @game_teams = []
     game_team_instance(info_hash[:game_teams])
   end
@@ -147,6 +149,179 @@ class StatTracker
     end
     (games_won_by_visitor.count.to_f / games.count * 100).round(2)
   end
+
+  def home_win_percentages(team_id, games)
+    games_played_at_home = games.select do |game|
+      game.home_team_id == team_id
+    end
+
+    games_won_at_home =  games_played_at_home.count do |game|
+      game.outcome.include?("home")
+    end
+    if games_played_at_home.length != 0
+      return (games_won_at_home.to_f / games_played_at_home.length) * 100.0
+    else
+      return 0.0
+    end
+  end
+
+  def away_win_percentages(team_id, games)
+    games_played_away = games.select do |game|
+      game.away_team_id == team_id
+    end
+
+    games_won_away =  games_played_away.count do |game|
+      game.outcome.include?("away")
+    end
+
+    if games_played_away.length != 0
+      return (games_won_away.to_f / games_played_away.length) * 100.0
+    else
+      return 0.0
+    end
+  end
+
+
+  def home_win_percentage_per_team
+    home_win_percentage = Hash.new(0)
+
+    games_played_at_home_per_team = @games.group_by do |game|
+      game.home_team_id
+    end
+
+    games_played_at_home_per_team.each do |home_team_id, games|
+      home_win_percentage[home_team_id] = home_win_percentages(home_team_id, games)
+    end
+    home_win_percentage
+
+  end
+
+  # def games_by_teams_location(home_or_away)
+  #
+  #   @teams.each do |team|
+  #     if
+  #   games_by_location = @games.group_by do |game|
+  #     if team_id == game.away_team_id
+  #       game.away_team_id
+  #     elsif team_id == game.home_team_id
+  #       game.home_team_id
+  #     end
+  #     games_by_location
+  # end
+  #
+  # end
+
+  def away_win_percentage_per_team
+    away_win_percentage = Hash.new(0)
+    games_played_away_per_team = @games.group_by do |game|
+      game.away_team_id
+    end
+
+    games_played_away_per_team.each do |away_team_id, games|
+      away_win_percentage[away_team_id] = away_win_percentages(away_team_id,games)
+    end
+    away_win_percentage
+  end
+
+  def assign_percentages_to_teams
+    @teams.each do |team|
+      team.away_win_percentage = away_win_percentage_per_team[team.team_id]
+    end
+
+    @teams.each do |team|
+      team.home_win_percentage = home_win_percentage_per_team[team.team_id]
+    end
+  end
+
+  def best_fans
+    best_fans_team = @teams.max_by do |team|
+      team.home_win_percentage - team.away_win_percentage
+    end
+    best_fans_team.team_name
+  end
+
+  def worst_fans
+    worst_fans_teams = @teams.select do |team|
+      team.away_win_percentage > team.home_win_percentage
+    end
+    
+    worst_fans_teams.map do |team|
+      team.team_name
+    end
+  end
+
+
+def games_by_season_type(season_id, team_id)
+
+  games_by_type_of_season = Hash.new
+  games_in_season = games_by_season[season_id]
+
+  preseason = games_in_season.select do |game|
+    game.type == "P"
+  end
+
+  regular_season = games_in_season.select do |game|
+    game.type == "R"
+  end
+
+  games_by_type_of_season[:preseason] = preseason
+  games_by_type_of_season[:regular_season] = regular_season
+
+  games_by_type_of_season[:preseason].delete_if do |game|
+    game.away_team_id != team_id && game.home_team_id != team_id
+  end
+
+  games_by_type_of_season[:regular_season].delete_if do |game|
+    game.away_team_id != team_id && game.home_team_id != team_id
+  end
+
+  games_by_type_of_season
+
+end
+
+def win_percentage(team_id,games)
+  (away_win_percentages(team_id, games) + home_win_percentages(team_id, games)).to_f/2
+end
+
+# def goals_scored(team_id,games)
+#   goals = 0
+#   games.each do |game|
+#     if game.away_team_id == team_id
+#       goals =+ game.away_goals
+#     else
+#       goals += game.home_goals
+#     end
+# end
+# goals
+# end
+#
+#
+# def season_summary(season_id, team_id)
+#   summary = {}
+#   by_season_type_for_given_team = games_by_season_type(season_id, team_id)
+#   preseason_stats = {}
+#   regular_season_stats = {}
+#
+#   preseason_games = by_season_type_for_given_team[:preseason]
+#   regular_games = by_season_type_for_given_team[:regular_season]
+#
+#   preseason_wins = win_percentage(team_id, preseason_games)
+#   regular_wins = win_percentage(team_id, regular_games)
+#
+#   preseason_goals = goals_scored(team_id, preseason_games)
+#   regular_goals = goals_scored(team_id,regular_games)
+#
+#   preseason_stats[:win_percentage] = preseason_wins
+#   preseason_stats[:goals_scored] = preseason_goals
+#
+#   regular_season_stats[:win_percentage] = regular_wins
+#   regular_season_stats[:goals_scored] = regular_goals
+#
+#   summary[:preseason] = preseason_stats
+#   summary[:regular_season] = regular_season_stats
+#
+#   summary
+# end
 
   def count_of_teams
     @teams.count

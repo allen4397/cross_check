@@ -1,7 +1,16 @@
 require 'csv'
 
 class Game
-  attr_reader :venue, :season, :outcome
+  attr_reader :venue,
+              :season,
+              :outcome,
+              :away_team_id,
+              :home_team_id,
+              :type,
+              :home_goals,
+              :away_goals,
+              :game_id
+
 
   def initialize(game_info)
     @away_goals = game_info[:away_goals].to_i
@@ -9,7 +18,10 @@ class Game
     @venue = game_info[:venue]
     @season = game_info[:season]
     @outcome = game_info[:outcome]
-
+    @away_team_id = game_info[:away_team_id]
+    @home_team_id = game_info[:home_team_id]
+    @type = game_info[:type]
+    @game_id = game_info[:game_id]
   end
 
   def total_score
