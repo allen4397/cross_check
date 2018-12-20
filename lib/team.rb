@@ -30,13 +30,4 @@ class Team
                   abbreviation: @abbreviation,
                   link: @link}
   end
-
-  
-
-
-
-
-
-
-
 end
