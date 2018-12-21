@@ -208,18 +208,8 @@ class StatTracker
 
   def highest_scoring_home_team
     highest_scoring_home_team = teams.max_by do |team|
-      total_home_points = games.sum do |game| # team method
-        if team.team_id == game.home_team_id
-          game.home_goals
-        else
-          0
-        end
-      end
-      games_played_as_home_team = games.count do |game| # team method
-        game.home_team_id == team.team_id
-      end
-      if games_played_as_home_team != 0
-        total_home_points.to_f / games_played_as_home_team
+      if team.games_played_as_home_team(games) != 0
+        team.total_home_points(games).to_f / team.games_played_as_home_team(games)
       else
         0
       end
@@ -229,18 +219,8 @@ class StatTracker
 
   def highest_scoring_visitor
     highest_scoring_away_team = teams.max_by do |team|
-      total_away_points = games.sum do |game| # team method
-        if team.team_id == game.away_team_id
-          game.away_goals
-        else
-          0
-        end
-      end
-      games_played_as_visitor = games.count do |game| # team method
-        game.away_team_id == team.team_id
-      end
-      if games_played_as_visitor != 0
-        total_away_points.to_f / games_played_as_visitor
+      if team.games_played_as_visitor(games) != 0
+        team.total_away_points(games).to_f / team.games_played_as_visitor(games)
       else
         0
       end
