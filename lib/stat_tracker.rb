@@ -236,50 +236,10 @@ class StatTracker
   end
 
   def biggest_bust(season_id)
-    preseason = group_games_by_season_type("P")
-    reg_season = group_games_by_season_type("R")
+    regular_season = group_games_by_season_type(("R"), games_by_season[season_id])
+    preseason = group_games_by_season_type(("P"), games_by_season[season_id])
     largest_decrease_in_percentage = @teams.max_by do |team|
-      total_preseason_wins = preseason.inject(0) do |wins, game| # method
-        if team.team_id == game.away_team_id && game.outcome.include?("away")
-          wins + 1
-        elsif team.team_id == game.home_team_id && game.outcome.include?("home")
-          wins + 1
-        else
-          wins
-        end
-      end
-      total_preseason_games_played = preseason.inject(0) do |total_played, game| # method
-        if team.team_id == game.away_team_id || team.team_id == game.home_team_id
-          total_played + 1
-        else
-          total_played
-        end
-      end
-      preseason_win_percentage = total_preseason_wins.to_f / total_preseason_games_played
-      total_reg_season_wins = reg_season.inject(0) do |wins, game| # method
-        if team.team_id == game.away_team_id && game.outcome.include?("away")
-          wins + 1
-        elsif team.team_id == game.home_team_id && game.outcome.include?("home")
-          wins + 1
-        else
-          wins
-        end
-      end
-      total_reg_season_games_played = reg_season.inject(0) do |total_played, game| # method
-        if team.team_id == game.away_team_id || team.team_id == game.home_team_id
-          total_played + 1
-        else
-          total_played
-        end
-      end
-      reg_season_win_percentage = total_reg_season_wins.to_f / total_reg_season_games_played
-      if reg_season_win_percentage != 0.0
-        preseason_win_percentage/reg_season_win_percentage
-      elsif preseason_win_percentage != 0.0
-        100.0
-      else
-        1.0
-      end
+      team.win_percentage(preseason)/team.win_percentage(regular_season)
     end
     largest_decrease_in_percentage.team_name
   end
@@ -292,8 +252,10 @@ class StatTracker
 
 
   def biggest_surprise(season_id)
+    regular_season = group_games_by_season_type(("R"), games_by_season[season_id])
+    preseason = group_games_by_season_type(("P"), games_by_season[season_id])
     largest_increase_in_percentage = @teams.max_by do |team|
-      team.win_percentage(group_games_by_season_type("R"))/team.win_percentage(group_games_by_season_type("P"))
+      team.win_percentage(regular_season)/team.win_percentage(preseason)
     end
     largest_increase_in_percentage.team_name
   end
