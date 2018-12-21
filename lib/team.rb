@@ -61,9 +61,25 @@ class Team
     end
   end
 
+  def total_home_points(games)
+    games.sum do |game|
+      if team_id == game.home_team_id
+        game.home_goals
+      else
+        0
+      end
+    end
+  end
+
   def games_played_as_visitor(games)
     games.count do |game|
       game.away_team_id == team_id
+    end
+  end
+
+  def games_played_as_home_team(games)
+    games.count do |game|
+      game.home_team_id == team_id
     end
   end
 end

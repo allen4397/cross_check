@@ -197,18 +197,8 @@ class StatTracker
 
   def lowest_scoring_home_team
     lowest_scoring_home_team = teams.min_by do |team|
-      total_home_points = games.sum do |game|
-        if team.team_id == game.home_team_id
-          game.home_goals
-        else
-          0
-        end
-      end
-      games_played_as_home_team = games.count do |game|
-        game.home_team_id == team.team_id
-      end
-      if games_played_as_home_team != 0
-        total_home_points.to_f / games_played_as_home_team
+      if team.games_played_as_home_team(games) != 0
+        team.total_home_points(games).to_f / team.games_played_as_home_team(games)
       else
         100
       end
