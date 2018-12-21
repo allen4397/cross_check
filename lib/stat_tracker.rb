@@ -230,23 +230,7 @@ class StatTracker
 
   def winningest_team
     team_with_highest_win_percentage = @teams.max_by do |team|
-      total_wins = @games.inject(0) do |wins, game| # team method?
-        if team.team_id == game.away_team_id && game.outcome.include?("away")
-          wins + 1
-        elsif team.team_id == game.home_team_id && game.outcome.include?("home")
-          wins + 1
-        else
-          wins
-        end
-      end
-      total_games_played = @games.inject(0) do |total_played, game| # team method?
-        if team.team_id == game.away_team_id || team.team_id == game.home_team_id
-          total_played + 1
-        else
-          total_played
-        end
-      end
-      total_wins.to_f / total_games_played
+      team.number_of_games_won(games).to_f / team.games_played_in(games).count
     end
     team_with_highest_win_percentage.team_name
   end
