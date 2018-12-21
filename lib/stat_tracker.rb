@@ -54,8 +54,8 @@ class StatTracker
   end
 
   def average_goals_per_game
-    total_goals = @games.inject(0) do |sum, game|
-      sum + game.total_score
+    total_goals = @games.sum do |game|
+      game.total_score
     end
     (total_goals.to_f/@games.length.to_f).round(2)
   end
@@ -235,6 +235,12 @@ class StatTracker
     team_with_highest_win_percentage.team_name
   end
 
+  def group_games_by_season_type(type, games = @games)
+    games.select do |game|
+      game.type == type
+    end
+  end
+
   def biggest_bust(season_id)
     regular_season = group_games_by_season_type(("R"), games_by_season[season_id])
     preseason = group_games_by_season_type(("P"), games_by_season[season_id])
@@ -243,13 +249,6 @@ class StatTracker
     end
     largest_decrease_in_percentage.team_name
   end
-
-  def group_games_by_season_type(type, games = @games)
-    games.select do |game|
-      game.type == type
-    end
-  end
-
 
   def biggest_surprise(season_id)
     regular_season = group_games_by_season_type(("R"), games_by_season[season_id])
