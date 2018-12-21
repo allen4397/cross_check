@@ -236,15 +236,8 @@ class StatTracker
   end
 
   def biggest_bust(season_id)
-    preseason = []
-    reg_season = []
-    @games.each do |game| # could this be a method?
-      if season_id == game.season && game.type == "P"
-        preseason << game
-      elsif season_id == game.season && game.type == "R"
-        reg_season << game
-      end
-    end
+    preseason = group_games_by_season_type("P")
+    reg_season = group_games_by_season_type("R")
     largest_decrease_in_percentage = @teams.max_by do |team|
       total_preseason_wins = preseason.inject(0) do |wins, game| # method
         if team.team_id == game.away_team_id && game.outcome.include?("away")
@@ -291,58 +284,16 @@ class StatTracker
     largest_decrease_in_percentage.team_name
   end
 
-  def biggest_surprise(season_id)
-    preseason = []
-    reg_season = []
-    @games.each do |game| # method
-      if season_id == game.season && game.type == "P"
-        preseason << game
-      elsif season_id == game.season && game.type == "R"
-        reg_season << game
-      end
+  def group_games_by_season_type(type, games = @games)
+    games.select do |game|
+      game.type == type
     end
-    largest_increase_in_percentage = @teams.max_by do |team| #THIS is the real method
-      total_preseason_wins = preseason.inject(0) do |wins, game| # separate method
-        if team.team_id == game.away_team_id && game.outcome.include?("away")
-          wins + 1
-        elsif team.team_id == game.home_team_id && game.outcome.include?("home")
-          wins + 1
-        else
-          wins
-        end
-      end
-      total_preseason_games_played = preseason.inject(0) do |total_played, game| # separate method
-        if team.team_id == game.away_team_id || team.team_id == game.home_team_id
-          total_played + 1
-        else
-          total_played
-        end
-      end
-      preseason_win_percentage = total_preseason_wins.to_f / total_preseason_games_played # method
-      total_reg_season_wins = reg_season.inject(0) do |wins, game| # method
-        if team.team_id == game.away_team_id && game.outcome.include?("away")
-          wins + 1
-        elsif team.team_id == game.home_team_id && game.outcome.include?("home")
-          wins + 1
-        else
-          wins
-        end
-      end
-      total_reg_season_games_played = reg_season.inject(0) do |total_played, game| # method
-        if team.team_id == game.away_team_id || team.team_id == game.home_team_id
-          total_played + 1
-        else
-          total_played
-        end
-      end
-      reg_season_win_percentage = total_reg_season_wins.to_f / total_reg_season_games_played
-      if preseason_win_percentage != 0.0
-        reg_season_win_percentage/preseason_win_percentage
-      elsif reg_season_win_percentage != 0.0
-        100.0
-      else
-        1.0
-      end
+  end
+
+
+  def biggest_surprise(season_id)
+    largest_increase_in_percentage = @teams.max_by do |team|
+      team.win_percentage(group_games_by_season_type("R"))/team.win_percentage(group_games_by_season_type("P"))
     end
     largest_increase_in_percentage.team_name
   end
@@ -456,33 +407,33 @@ class StatTracker
   end
 
 
-  def games_by_season_type(season_id, team_id)
-
-    games_by_type_of_season = Hash.new
-    games_in_season = games_by_season[season_id]
-
-    preseason = games_in_season.select do |game|
-      game.type == "P"
-    end
-
-    regular_season = games_in_season.select do |game|
-      game.type == "R"
-    end
-
-    games_by_type_of_season[:preseason] = preseason
-    games_by_type_of_season[:regular_season] = regular_season
-
-    games_by_type_of_season[:preseason].delete_if do |game|
-      game.away_team_id != team_id && game.home_team_id != team_id
-    end
-
-    games_by_type_of_season[:regular_season].delete_if do |game|
-      game.away_team_id != team_id && game.home_team_id != team_id
-    end
-
-    games_by_type_of_season
-
-  end
+  # def games_by_season_type(season_id, team_id)
+  #
+  #   games_by_type_of_season = Hash.new
+  #   games_in_season = games_by_season[season_id]
+  #
+  #   preseason = games_in_season.select do |game|
+  #     game.type == "P"
+  #   end
+  #
+  #   regular_season = games_in_season.select do |game|
+  #     game.type == "R"
+  #   end
+  #
+  #   games_by_type_of_season[:preseason] = preseason
+  #   games_by_type_of_season[:regular_season] = regular_season
+  #
+  #   games_by_type_of_season[:preseason].delete_if do |game|
+  #     game.away_team_id != team_id && game.home_team_id != team_id
+  #   end
+  #
+  #   games_by_type_of_season[:regular_season].delete_if do |game|
+  #     game.away_team_id != team_id && game.home_team_id != team_id
+  #   end
+  #
+  #   games_by_type_of_season
+  #
+  # end
 
   def goals_scored(team_id,games)
     goals = 0

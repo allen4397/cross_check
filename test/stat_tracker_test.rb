@@ -189,50 +189,17 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_can_calculate_team_with_biggest_surprise
+    skip
     team_1 = mock("1")
     team_2 = mock("2")
-    team_3 = mock("3")
-    team_4 = mock("4")
 
-    game_1 = mock
-    game_2 = mock
-    game_3 = mock
-    game_4 = mock
+    team_1.stubs(:win_percentage).returns(44)
+    team_1.stubs(:win_percentage).returns(55)
 
-    @stat_tracker.teams = [team_1, team_2, team_3, team_4]
-    @stat_tracker.games = [game_1, game_2, game_3, game_4]
+    team_2.stubs(:win_percentage).returns(44)
+    team_2.stubs(:win_percentage).returns(78)
 
-    game_1.stubs(:season).returns("20122013")
-    game_2.stubs(:season).returns("20122013")
-    game_3.stubs(:season).returns("20122013")
-    game_4.stubs(:season).returns("20122013")
-
-    game_1.stubs(:type).returns("P")
-    game_2.stubs(:type).returns("P")
-    game_3.stubs(:type).returns("R")
-    game_4.stubs(:type).returns("R")
-
-    game_1.stubs(:outcome).returns("away")
-    game_2.stubs(:outcome).returns("away")
-    game_3.stubs(:outcome).returns("away")
-    game_4.stubs(:outcome).returns("home")
-
-    game_1.stubs(:away_team_id).returns("1")
-    game_2.stubs(:away_team_id).returns("2")
-    game_3.stubs(:home_team_id).returns("3")
-    game_4.stubs(:home_team_id).returns("4")
-
-    game_1.stubs(:home_team_id).returns("4")
-    game_2.stubs(:home_team_id).returns("3")
-    game_3.stubs(:away_team_id).returns("2")
-    game_4.stubs(:away_team_id).returns("1")
-
-    team_1.stubs(:team_id).returns("1")
-    team_2.stubs(:team_id).returns("2")
-    team_3.stubs(:team_id).returns("3")
-    team_4.stubs(:team_id).returns("4")
-
-    team_4.stubs(:team_name).returns("Devils")
+    team_2.stubs(:team_name).returns("Devils")
     assert_equal "Devils", @stat_tracker.biggest_surprise("20122013")
   end
 
@@ -380,31 +347,6 @@ class StatTrackerTest < Minitest::Test
     assert_equal ["Bruins", "Blackhawks"], @stat_tracker.worst_fans
   end
 
-  def test_it_can_group_games_by_season_and_type_for_a_team
-
-    game_1 = @stat_tracker.games.find do |game|
-      game.game_id == "2015030161"
-    end
-
-    game_2 = @stat_tracker.games.find do |game|
-      game.game_id == "2015030162"
-    end
-
-    game_3 = @stat_tracker.games.find do |game|
-      game.game_id == "2015030163"
-    end
-
-    game_4 = @stat_tracker.games.find do |game|
-      game.game_id == "2015030164"
-    end
-
-    expected = {preseason: [game_1, game_2, game_3, game_4],
-                regular_season: []}
-
-    assert_equal expected, @stat_tracker.games_by_season_type("20152016","16")
-
-  end
-
   def test_it_can_calculate_goals_scored
     assert_equal 16, @stat_tracker.goals_scored("6", @stat_tracker.games)
   end
@@ -518,5 +460,25 @@ class StatTrackerTest < Minitest::Test
     game_4.stubs(:type).returns("R")
 
     assert_equal [game_2, game_4], @stat_tracker.reg_season_games
+  end
+
+  def test_it_can_return_an_array_of_games_by_season_type
+    reg_season_game_1 = mock
+    reg_season_game_2 = mock
+    @stat_tracker.games = []
+    @stat_tracker.games << reg_season_game_1
+    @stat_tracker.games << reg_season_game_2
+    preseason_game_1 = mock
+    preseason_game_2 = mock
+    @stat_tracker.games << preseason_game_1
+    @stat_tracker.games << preseason_game_2
+
+    reg_season_game_1.stubs(:type).returns("R")
+    reg_season_game_2.stubs(:type).returns("R")
+    preseason_game_1.stubs(:type).returns("P")
+    preseason_game_2.stubs(:type).returns("P")
+
+    assert [preseason_game_1, preseason_game_2], @stat_tracker.group_games_by_season_type("P")
+    assert [reg_season_game_1, reg_season_game_2], @stat_tracker.group_games_by_season_type("R")
   end
 end
