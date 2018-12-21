@@ -31,6 +31,10 @@ class Team
                   link: @link}
   end
 
+  def win_percentage(games)
+    number_of_games_won(games)/games_played_in(games).count.to_f * 100
+  end
+
   def number_of_games_won(games)
     games_won = 0
     games.each do |game|
@@ -39,5 +43,27 @@ class Team
       end
     end
     return games_won
+  end
+
+  def games_played_in(games)
+    games.find_all do |game|
+      game.away_team_id == @team_id || game.home_team_id == @team_id
+    end
+  end
+
+  def total_away_points(games)
+    games.sum do |game|
+      if team_id == game.away_team_id
+        game.away_goals
+      else
+        0
+      end
+    end
+  end
+
+  def games_played_as_visitor(games)
+    games.count do |game|
+      game.away_team_id == team_id
+    end
   end
 end

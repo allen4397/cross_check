@@ -405,11 +405,6 @@ class StatTrackerTest < Minitest::Test
 
   end
 
-  def test_it_can_calculate_win_percentage_for_a_team_across_given_games
-
-    assert_equal 80.0 , @stat_tracker.win_percentage("6", @stat_tracker.games)
-  end
-
   def test_it_can_calculate_goals_scored
     assert_equal 16, @stat_tracker.goals_scored("6", @stat_tracker.games)
   end
@@ -460,7 +455,7 @@ class StatTrackerTest < Minitest::Test
     assert_equal "Blackhawks", @stat_tracker.worst_offense_by_team_name
   end
 
-  def test_it_gets_opponnent_game_ids
+  def test_it_gets_opponent_game_ids
     assert_equal ["2012030221", "2012030222", "2012030223", "2012030224", "2012030225"], @stat_tracker.get_opponent_team_game_ids("3")
   end
 
@@ -489,5 +484,39 @@ class StatTrackerTest < Minitest::Test
 
   def test_it_gets_team_name_from_id
     assert_equal "Blackhawks", @stat_tracker.get_team_name_from_id("16")
+  end
+
+  def test_it_can_collect_preseason_games
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+    game_4 = mock
+
+
+    @stat_tracker.games = [game_1, game_2, game_3, game_4]
+
+    game_1.stubs(:type).returns("P")
+    game_2.stubs(:type).returns("R")
+    game_3.stubs(:type).returns("P")
+    game_4.stubs(:type).returns("R")
+
+    assert_equal [game_1, game_3], @stat_tracker.preseason_games
+  end
+
+  def test_it_can_collect_reg_season_games
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+    game_4 = mock
+
+
+    @stat_tracker.games = [game_1, game_2, game_3, game_4]
+
+    game_1.stubs(:type).returns("P")
+    game_2.stubs(:type).returns("R")
+    game_3.stubs(:type).returns("P")
+    game_4.stubs(:type).returns("R")
+
+    assert_equal [game_2, game_4], @stat_tracker.reg_season_games
   end
 end

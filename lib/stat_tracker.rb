@@ -24,6 +24,8 @@ class StatTracker
     StatTracker.new(data)
   end
 
+ ####################### Instance Creation###########################
+
   def game_instance(game_file)
     CSV.foreach(game_file, headers: true, header_converters: :symbol) do |row|
       @games << Game.new(row)
@@ -42,6 +44,8 @@ class StatTracker
     end
   end
 
+#################################GAME ANALYTICS FOR ALL GAMES FOR ALL TEAMS#############
+
   def highest_total_score
     max_game = @games.max_by do |game|
       game.total_score
@@ -49,32 +53,11 @@ class StatTracker
     max_game.total_score
   end
 
-  def percentage_home_wins
-    games_won_by_home = games.find_all do |game|
-      game.outcome[0..3] == "home"
-    end
-    (games_won_by_home.count.to_f / games.count * 100).round(2)
-  end
-
-  def team_info(id)
-    found_team = @teams.find do |team|
-      team.team_id == id
-    end
-    team_hash = Hash.new
-    team_hash[id] = found_team.provide_info
-  end
-
   def average_goals_per_game
     total_goals = @games.inject(0) do |sum, game|
       sum + game.total_score
     end
     (total_goals.to_f/@games.length.to_f).round(2)
-  end
-
-  def games_by_season
-    @games.group_by do |game|
-      game.season
-    end
   end
 
   def average_goals_by_season
@@ -102,14 +85,54 @@ class StatTracker
     blowout_game.score_difference
   end
 
-  def game_count_by_venue
-    venue_events = @games.group_by do |game|
-      game.venue
+##########################GAME ANALYTICS FOR ALL TEAMS AT HOME###################
+
+  def percentage_home_wins
+    games_won_by_home = games.find_all do |game|
+      game.outcome[0..3] == "home"
     end
-    venue_events.map do |venue, games|
-      [venue, games.count]
+    (games_won_by_home.count.to_f / games.count * 100).round(2)
+  end
+
+#############################TEAM ANALYTICS#######################
+
+  def team_info(id)
+    found_team = @teams.find do |team|
+      team.team_id == id
+    end
+    team_hash = Hash.new
+    team_hash[id] = found_team.provide_info
+  end
+
+
+############################GAME ANALYTICS HELPER METHODS#########################
+
+  def games_by_season
+    @games.group_by do |game|
+      game.season
     end
   end
+
+  def preseason_games
+    @games.find_all do |game|
+      game.type == "P"
+    end
+  end
+
+  def reg_season_games
+    @games.find_all do |game|
+      game.type == "R"
+    end
+  end
+
+
+
+
+
+
+
+
+
 
   def most_popular_venue
     most_popular = game_count_by_venue.max_by do |venue_count|
@@ -123,6 +146,17 @@ class StatTracker
       venue_count.last
     end
     return least_popular.first
+  end
+
+############ HELPER METHOD FOR THE VENUE METHODS
+
+  def game_count_by_venue
+    venue_events = @games.group_by do |game|
+      game.venue
+    end
+    venue_events.map do |venue, games|
+      [venue, games.count]
+    end
   end
 
   def count_of_games_by_season
@@ -152,18 +186,8 @@ class StatTracker
 
   def lowest_scoring_visitor
     lowest_scoring_away_team = teams.min_by do |team|
-      total_away_points = games.sum do |game| # team method
-        if team.team_id == game.away_team_id
-          game.away_goals
-        else
-          0
-        end
-      end
-      games_played_as_visitor = games.count do |game| # team method
-        game.away_team_id == team.team_id
-      end
-      if games_played_as_visitor != 0
-        total_away_points.to_f / games_played_as_visitor
+      if team.games_played_as_visitor(games) != 0
+        team.total_away_points(games).to_f / team.games_played_as_visitor(games)
       else
         100
       end
@@ -370,11 +394,11 @@ class StatTracker
   end
   #
   # def season_summary(season_id, team_id)
-    # team method that returns preseason summary hash
+    # team method that returns preseason summary hash (preseason_summary)
     # {team method for preseason_win_percentage
     # team method for preseason_goals_scored
     # team method for preseason_goals_against}
-    # same thing for reg season
+    # same thing for reg season (reg_season_summary)
     # hash with preseason summary hash and regular season summary hash
 
   def home_win_percentages(team_id, games)
@@ -506,14 +530,6 @@ class StatTracker
 
   end
 
-  def win_percentage(team_id,games)
-    # (away_win_percentages(team_id, games) + home_win_percentages(team_id, games)).to_f/2
-    team_instance = @teams.find do |team|
-      team.team_id == team_id
-    end
-    team_instance.number_of_games_won(games)/game_count_by_team_id(team_id).to_f * 100
-  end
-
   def goals_scored(team_id,games)
     goals = 0
     games.each do |game|
@@ -525,8 +541,7 @@ class StatTracker
     end
     goals
   end
-#
-#
+
 # def season_summary(season_id, team_id)
 #   summary = {}
 #   by_season_type_for_given_team = games_by_season_type(season_id, team_id)
