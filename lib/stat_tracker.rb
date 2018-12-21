@@ -85,13 +85,18 @@ class StatTracker
     blowout_game.score_difference
   end
 
-##########################GAME ANALYTICS FOR ALL TEAMS AT HOME###################
-
   def percentage_home_wins
     games_won_by_home = games.find_all do |game|
       game.outcome[0..3] == "home"
     end
     (games_won_by_home.count.to_f / games.count * 100).round(2)
+  end
+
+  def percentage_visitor_wins
+    games_won_by_visitor = games.find_all do |game|
+      game.outcome[0..3] == "away"
+    end
+    (games_won_by_visitor.count.to_f / games.count * 100).round(2)
   end
 
 #############################TEAM ANALYTICS#######################
@@ -124,15 +129,6 @@ class StatTracker
       game.type == "R"
     end
   end
-
-
-
-
-
-
-
-
-
 
   def most_popular_venue
     most_popular = game_count_by_venue.max_by do |venue_count|
@@ -175,13 +171,6 @@ class StatTracker
   def season_with_fewest_games
     lowest_count = count_of_games_by_season.values.min
     count_of_games_by_season.key(lowest_count).to_i
-  end
-
-  def percentage_visitor_wins
-    games_won_by_visitor = games.find_all do |game|
-      game.outcome[0..3] == "away"
-    end
-    (games_won_by_visitor.count.to_f / games.count * 100).round(2)
   end
 
   def lowest_scoring_visitor
@@ -396,7 +385,7 @@ class StatTracker
   #
   # end
 
-  def goals_scored(team_id,games)
+  def goals_scored(team_id,games) # could this be a team method?
     goals = 0
     games.each do |game|
       if game.away_team_id == team_id
