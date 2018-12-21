@@ -20,7 +20,7 @@ class StatTracker
     game_team_instance(info_hash[:game_teams])
   end
 
-  def self.from_csv(data)
+  def self.from_csv(data) ###### maybe load the csvs to local variables??
     StatTracker.new(data)
   end
 
