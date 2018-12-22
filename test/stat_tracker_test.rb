@@ -142,99 +142,33 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_can_calculate_team_with_biggest_bust
-    team_1 = mock
-    team_2 = mock
-    team_3 = mock
-    team_4 = mock
+    game_path = './data/extra_test_game.csv'
+    team_path = './data/extra_test_team.csv'
+    game_teams_path = './data/test_game_team_stats.csv'
 
-    game_1 = mock
-    game_2 = mock
-    game_3 = mock
-    game_4 = mock
+    locations = {
+     games: game_path,
+     teams: team_path,
+     game_teams: game_teams_path
+    }
 
-    @stat_tracker.teams = [team_1, team_2, team_3, team_4]
-    @stat_tracker.games = [game_1, game_2, game_3, game_4]
-
-    game_1.stubs(:season).returns("20122013")
-    game_2.stubs(:season).returns("20122013")
-    game_3.stubs(:season).returns("20122013")
-    game_4.stubs(:season).returns("20122013")
-
-    game_1.stubs(:type).returns("P")
-    game_2.stubs(:type).returns("P")
-    game_3.stubs(:type).returns("R")
-    game_4.stubs(:type).returns("R")
-
-    game_1.stubs(:outcome).returns("away")
-    game_2.stubs(:outcome).returns("away")
-    game_3.stubs(:outcome).returns("away")
-    game_4.stubs(:outcome).returns("home")
-
-    game_1.stubs(:away_team_id).returns("1")
-    game_2.stubs(:away_team_id).returns("2")
-    game_3.stubs(:home_team_id).returns("3")
-    game_4.stubs(:home_team_id).returns("4")
-
-    game_1.stubs(:home_team_id).returns("4")
-    game_2.stubs(:home_team_id).returns("3")
-    game_3.stubs(:away_team_id).returns("2")
-    game_4.stubs(:away_team_id).returns("1")
-
-    team_1.stubs(:team_id).returns("1")
-    team_2.stubs(:team_id).returns("2")
-    team_3.stubs(:team_id).returns("3")
-    team_4.stubs(:team_id).returns("4")
-
-    team_1.stubs(:team_name).returns("The Mighty Ducks")
-    assert_equal "The Mighty Ducks", @stat_tracker.biggest_bust("20122013")
+    stat_tracker_2 = StatTracker.from_csv(locations)
+    assert_equal "Rangers", stat_tracker_2.biggest_bust("20122013")
   end
 
   def test_it_can_calculate_team_with_biggest_surprise
-    team_1 = mock("1")
-    team_2 = mock("2")
-    team_3 = mock("3")
-    team_4 = mock("4")
+    game_path = './data/extra_test_game.csv'
+    team_path = './data/extra_test_team.csv'
+    game_teams_path = './data/test_game_team_stats.csv'
 
-    game_1 = mock
-    game_2 = mock
-    game_3 = mock
-    game_4 = mock
+    locations = {
+     games: game_path,
+     teams: team_path,
+     game_teams: game_teams_path
+    }
 
-    @stat_tracker.teams = [team_1, team_2, team_3, team_4]
-    @stat_tracker.games = [game_1, game_2, game_3, game_4]
-
-    game_1.stubs(:season).returns("20122013")
-    game_2.stubs(:season).returns("20122013")
-    game_3.stubs(:season).returns("20122013")
-    game_4.stubs(:season).returns("20122013")
-
-    game_1.stubs(:type).returns("P")
-    game_2.stubs(:type).returns("P")
-    game_3.stubs(:type).returns("R")
-    game_4.stubs(:type).returns("R")
-
-    game_1.stubs(:outcome).returns("away")
-    game_2.stubs(:outcome).returns("away")
-    game_3.stubs(:outcome).returns("away")
-    game_4.stubs(:outcome).returns("home")
-
-    game_1.stubs(:away_team_id).returns("1")
-    game_2.stubs(:away_team_id).returns("2")
-    game_3.stubs(:home_team_id).returns("3")
-    game_4.stubs(:home_team_id).returns("4")
-
-    game_1.stubs(:home_team_id).returns("4")
-    game_2.stubs(:home_team_id).returns("3")
-    game_3.stubs(:away_team_id).returns("2")
-    game_4.stubs(:away_team_id).returns("1")
-
-    team_1.stubs(:team_id).returns("1")
-    team_2.stubs(:team_id).returns("2")
-    team_3.stubs(:team_id).returns("3")
-    team_4.stubs(:team_id).returns("4")
-
-    team_4.stubs(:team_name).returns("Devils")
-    assert_equal "Devils", @stat_tracker.biggest_surprise("20122013")
+    stat_tracker_2 = StatTracker.from_csv(locations)
+    assert_equal "Bruins", stat_tracker_2.biggest_surprise("20122013")
   end
 
   def test_it_can_summarize_the_season
@@ -526,5 +460,25 @@ class StatTrackerTest < Minitest::Test
     game_4.stubs(:type).returns("R")
 
     assert_equal [game_2, game_4], @stat_tracker.reg_season_games
+  end
+
+  def test_it_can_return_an_array_of_games_by_season_type
+    reg_season_game_1 = mock
+    reg_season_game_2 = mock
+    @stat_tracker.games = []
+    @stat_tracker.games << reg_season_game_1
+    @stat_tracker.games << reg_season_game_2
+    preseason_game_1 = mock
+    preseason_game_2 = mock
+    @stat_tracker.games << preseason_game_1
+    @stat_tracker.games << preseason_game_2
+
+    reg_season_game_1.stubs(:type).returns("R")
+    reg_season_game_2.stubs(:type).returns("R")
+    preseason_game_1.stubs(:type).returns("P")
+    preseason_game_2.stubs(:type).returns("P")
+
+    assert [preseason_game_1, preseason_game_2], @stat_tracker.group_games_by_season_type("P")
+    assert [reg_season_game_1, reg_season_game_2], @stat_tracker.group_games_by_season_type("R")
   end
 end

@@ -55,10 +55,6 @@ class StatTracker
     end
   end
 
-  # def team_info(id)
-  #   @team_stats.get_team_info(id)
-  # end
-
 #################################GAME ANALYTICS FOR ALL GAMES FOR ALL TEAMS#############
 
 
@@ -77,8 +73,8 @@ class StatTracker
   end
 
   def average_goals_per_game
-    total_goals = @games.inject(0) do |sum, game|
-      sum + game.total_score
+    total_goals = @games.sum do |game|
+      game.total_score
     end
     (total_goals.to_f/@games.length.to_f).round(2)
   end
@@ -114,8 +110,6 @@ class StatTracker
     blowout_game.score_difference
   end
 
-##########################GAME ANALYTICS FOR ALL TEAMS AT HOME###################
-
   def percentage_home_wins
     games_won_by_home = games.find_all do |game|
       game.outcome[0..3] == "home"
@@ -123,9 +117,16 @@ class StatTracker
     (games_won_by_home.count.to_f / games.count * 100).round(2)
   end
 
+  def percentage_visitor_wins
+    games_won_by_visitor = games.find_all do |game|
+      game.outcome[0..3] == "away"
+    end
+    (games_won_by_visitor.count.to_f / games.count * 100).round(2)
+  end
+
 #############################TEAM ANALYTICS#######################
 
-  def team_info(id)
+  def team_info(id) #This is ready to be deleted once confirmed
     found_team = @teams.find do |team|
       team.team_id == id
     end
@@ -153,8 +154,6 @@ class StatTracker
       game.type == "R"
     end
   end
-
-
 
   def most_popular_venue
     most_popular = game_count_by_venue.max_by do |venue_count|
@@ -197,13 +196,6 @@ class StatTracker
   def season_with_fewest_games
     lowest_count = count_of_games_by_season.values.min
     count_of_games_by_season.key(lowest_count).to_i
-  end
-
-  def percentage_visitor_wins
-    games_won_by_visitor = games.find_all do |game|
-      game.outcome[0..3] == "away"
-    end
-    (games_won_by_visitor.count.to_f / games.count * 100).round(2)
   end
 
   def lowest_scoring_visitor
@@ -257,126 +249,29 @@ class StatTracker
     team_with_highest_win_percentage.team_name
   end
 
-  def biggest_bust(season_id)
-    preseason = []
-    reg_season = []
-    @games.each do |game| # could this be a method?
-      if season_id == game.season && game.type == "P"
-        preseason << game
-      elsif season_id == game.season && game.type == "R"
-        reg_season << game
-      end
+  def group_games_by_season_type(type, games = @games)
+    games.select do |game|
+      game.type == type
     end
+  end
+
+  def biggest_bust(season_id)
+    regular_season = group_games_by_season_type(("R"), games_by_season[season_id])
+    preseason = group_games_by_season_type(("P"), games_by_season[season_id])
     largest_decrease_in_percentage = @teams.max_by do |team|
-      total_preseason_wins = preseason.inject(0) do |wins, game| # method
-        if team.team_id == game.away_team_id && game.outcome.include?("away")
-          wins + 1
-        elsif team.team_id == game.home_team_id && game.outcome.include?("home")
-          wins + 1
-        else
-          wins
-        end
-      end
-      total_preseason_games_played = preseason.inject(0) do |total_played, game| # method
-        if team.team_id == game.away_team_id || team.team_id == game.home_team_id
-          total_played + 1
-        else
-          total_played
-        end
-      end
-      preseason_win_percentage = total_preseason_wins.to_f / total_preseason_games_played
-      total_reg_season_wins = reg_season.inject(0) do |wins, game| # method
-        if team.team_id == game.away_team_id && game.outcome.include?("away")
-          wins + 1
-        elsif team.team_id == game.home_team_id && game.outcome.include?("home")
-          wins + 1
-        else
-          wins
-        end
-      end
-      total_reg_season_games_played = reg_season.inject(0) do |total_played, game| # method
-        if team.team_id == game.away_team_id || team.team_id == game.home_team_id
-          total_played + 1
-        else
-          total_played
-        end
-      end
-      reg_season_win_percentage = total_reg_season_wins.to_f / total_reg_season_games_played
-      if reg_season_win_percentage != 0.0
-        preseason_win_percentage/reg_season_win_percentage
-      elsif preseason_win_percentage != 0.0
-        100.0
-      else
-        1.0
-      end
+      team.win_percentage(preseason)/team.win_percentage(regular_season)
     end
     largest_decrease_in_percentage.team_name
   end
 
   def biggest_surprise(season_id)
-    preseason = []
-    reg_season = []
-    @games.each do |game| # method
-      if season_id == game.season && game.type == "P"
-        preseason << game
-      elsif season_id == game.season && game.type == "R"
-        reg_season << game
-      end
-    end
-    largest_increase_in_percentage = @teams.max_by do |team| #THIS is the real method
-      total_preseason_wins = preseason.inject(0) do |wins, game| # separate method
-        if team.team_id == game.away_team_id && game.outcome.include?("away")
-          wins + 1
-        elsif team.team_id == game.home_team_id && game.outcome.include?("home")
-          wins + 1
-        else
-          wins
-        end
-      end
-      total_preseason_games_played = preseason.inject(0) do |total_played, game| # separate method
-        if team.team_id == game.away_team_id || team.team_id == game.home_team_id
-          total_played + 1
-        else
-          total_played
-        end
-      end
-      preseason_win_percentage = total_preseason_wins.to_f / total_preseason_games_played # method
-      total_reg_season_wins = reg_season.inject(0) do |wins, game| # method
-        if team.team_id == game.away_team_id && game.outcome.include?("away")
-          wins + 1
-        elsif team.team_id == game.home_team_id && game.outcome.include?("home")
-          wins + 1
-        else
-          wins
-        end
-      end
-      total_reg_season_games_played = reg_season.inject(0) do |total_played, game| # method
-        if team.team_id == game.away_team_id || team.team_id == game.home_team_id
-          total_played + 1
-        else
-          total_played
-        end
-      end
-      reg_season_win_percentage = total_reg_season_wins.to_f / total_reg_season_games_played
-      if preseason_win_percentage != 0.0
-        reg_season_win_percentage/preseason_win_percentage
-      elsif reg_season_win_percentage != 0.0
-        100.0
-      else
-        1.0
-      end
+    regular_season = group_games_by_season_type(("R"), games_by_season[season_id])
+    preseason = group_games_by_season_type(("P"), games_by_season[season_id])
+    largest_increase_in_percentage = @teams.max_by do |team|
+      team.win_percentage(regular_season)/team.win_percentage(preseason)
     end
     largest_increase_in_percentage.team_name
   end
-
-  #
-  # def season_summary(season_id, team_id)
-    # team method that returns preseason summary hash (preseason_summary)
-    # {team method for preseason_win_percentage
-    # team method for preseason_goals_scored
-    # team method for preseason_goals_against}
-    # same thing for reg season (reg_season_summary)
-    # hash with preseason summary hash and regular season summary hash
 
   def home_win_percentages(team_id, games)
     games_played_at_home = games.select do |game|
@@ -424,21 +319,6 @@ class StatTracker
 
   end
 
-  # def games_by_teams_location(home_or_away)
-  #
-  #   @teams.each do |team|
-  #     if
-  #   games_by_location = @games.group_by do |game|
-  #     if team_id == game.away_team_id
-  #       game.away_team_id
-  #     elsif team_id == game.home_team_id
-  #       game.home_team_id
-  #     end
-  #     games_by_location
-  # end
-  #
-  # end
-
   def away_win_percentage_per_team
     away_win_percentage = Hash.new(0)
     games_played_away_per_team = @games.group_by do |game|
@@ -478,7 +358,6 @@ class StatTracker
     end
   end
 
-
   def games_by_season_type(season_id, team_id)
 
 
@@ -509,7 +388,7 @@ class StatTracker
 
   end
 
-  def goals_scored(team_id,games)
+  def goals_scored(team_id,games) # could this be a team method?
     goals = 0
     games.each do |game|
       if game.away_team_id == team_id
@@ -520,33 +399,6 @@ class StatTracker
     end
     goals
   end
-
-# def season_summary(season_id, team_id)
-#   summary = {}
-#   by_season_type_for_given_team = games_by_season_type(season_id, team_id)
-#   preseason_stats = {}
-#   regular_season_stats = {}
-#
-#   preseason_games = by_season_type_for_given_team[:preseason]
-#   regular_games = by_season_type_for_given_team[:regular_season]
-#
-#   preseason_wins = win_percentage(team_id, preseason_games)
-#   regular_wins = win_percentage(team_id, regular_games)
-#
-#   preseason_goals = goals_scored(team_id, preseason_games)
-#   regular_goals = goals_scored(team_id,regular_games)
-#
-#   preseason_stats[:win_percentage] = preseason_wins
-#   preseason_stats[:goals_scored] = preseason_goals
-#
-#   regular_season_stats[:win_percentage] = regular_wins
-#   regular_season_stats[:goals_scored] = regular_goals
-#
-#   summary[:preseason] = preseason_stats
-#   summary[:regular_season] = regular_season_stats
-#
-#   summary
-# end
 
   def count_of_teams
     @teams.count
