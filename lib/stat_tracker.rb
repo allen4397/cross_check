@@ -3,12 +3,18 @@ require_relative 'game'
 require_relative 'team'
 require 'pry'
 require_relative 'game_team'
+require_relative 'team_stats'
+require_relative 'game_stats'
+require_relative 'game_team_stats'
 
 class StatTracker
+  include TeamStats, GameStats, GameTeamStats
+
   attr_accessor :teams,
                 :games
 
-  attr_reader :game_teams
+  attr_reader :game_teams,
+              :team_stats
 
   def initialize(info_hash)
     @games = []
@@ -34,8 +40,13 @@ class StatTracker
 
   def team_instance(team_file)
     CSV.foreach(team_file, headers: true, header_converters: :symbol) do |row|
-      @teams << Team.new(row)
+      team = Team.new(row)
+      @teams << team
     end
+  end
+
+  def games_by_team_instance(team)
+    team.team_id
   end
 
   def game_team_instance(game_team_file)
@@ -46,11 +57,19 @@ class StatTracker
 
 #################################GAME ANALYTICS FOR ALL GAMES FOR ALL TEAMS#############
 
+
   def highest_total_score
     max_game = @games.max_by do |game|
       game.total_score
     end
     max_game.total_score
+  end
+
+  def percentage_home_wins
+    games_won_by_home = games.find_all do |game|
+      game.outcome[0..3] == "home"
+    end
+    (games_won_by_home.count.to_f / games.count * 100).round(2)
   end
 
   def average_goals_per_game
@@ -60,9 +79,15 @@ class StatTracker
     (total_goals.to_f/@games.length.to_f).round(2)
   end
 
+  def all_games_by_season
+    @games.group_by do |game|
+      game.season
+    end
+  end
+
   def average_goals_by_season
     average_by_season = {}
-    games_by_season.each do |season, games|
+    all_games_by_season.each do |season, games|
       total_score_for_season = games.inject(0) do |sum, game|
         sum + game.total_score
       end
@@ -101,7 +126,7 @@ class StatTracker
 
 #############################TEAM ANALYTICS#######################
 
-  def team_info(id)
+  def team_info(id) #This is ready to be deleted once confirmed
     found_team = @teams.find do |team|
       team.team_id == id
     end
@@ -157,7 +182,7 @@ class StatTracker
 
   def count_of_games_by_season
     game_count_by_season = {}
-    games_by_season.each do |season, games|
+    all_games_by_season.each do |season, games|
       game_count_by_season[season] = games.count
     end
     return game_count_by_season
@@ -247,14 +272,6 @@ class StatTracker
     end
     largest_increase_in_percentage.team_name
   end
-  #
-  # def season_summary(season_id, team_id)
-    # team method that returns preseason summary hash (preseason_summary)
-    # {team method for preseason_win_percentage
-    # team method for preseason_goals_scored
-    # team method for preseason_goals_against}
-    # same thing for reg season (reg_season_summary)
-    # hash with preseason summary hash and regular season summary hash
 
   def home_win_percentages(team_id, games)
     games_played_at_home = games.select do |game|
@@ -302,21 +319,6 @@ class StatTracker
 
   end
 
-  # def games_by_teams_location(home_or_away)
-  #
-  #   @teams.each do |team|
-  #     if
-  #   games_by_location = @games.group_by do |game|
-  #     if team_id == game.away_team_id
-  #       game.away_team_id
-  #     elsif team_id == game.home_team_id
-  #       game.home_team_id
-  #     end
-  #     games_by_location
-  # end
-  #
-  # end
-
   def away_win_percentage_per_team
     away_win_percentage = Hash.new(0)
     games_played_away_per_team = @games.group_by do |game|
@@ -356,34 +358,35 @@ class StatTracker
     end
   end
 
+  def games_by_season_type(season_id, team_id)
 
-  # def games_by_season_type(season_id, team_id)
-  #
-  #   games_by_type_of_season = Hash.new
-  #   games_in_season = games_by_season[season_id]
-  #
-  #   preseason = games_in_season.select do |game|
-  #     game.type == "P"
-  #   end
-  #
-  #   regular_season = games_in_season.select do |game|
-  #     game.type == "R"
-  #   end
-  #
-  #   games_by_type_of_season[:preseason] = preseason
-  #   games_by_type_of_season[:regular_season] = regular_season
-  #
-  #   games_by_type_of_season[:preseason].delete_if do |game|
-  #     game.away_team_id != team_id && game.home_team_id != team_id
-  #   end
-  #
-  #   games_by_type_of_season[:regular_season].delete_if do |game|
-  #     game.away_team_id != team_id && game.home_team_id != team_id
-  #   end
-  #
-  #   games_by_type_of_season
-  #
-  # end
+
+    games_by_type_of_season = Hash.new
+    games_in_season = games_by_season[season_id]
+
+
+    preseason = games_in_season.select do |game|
+      game.type == "P"
+    end
+
+    regular_season = games_in_season.select do |game|
+      game.type == "R"
+    end
+
+    games_by_type_of_season[:preseason] = preseason
+    games_by_type_of_season[:regular_season] = regular_season
+
+    games_by_type_of_season[:preseason].delete_if do |game|
+      game.away_team_id != team_id && game.home_team_id != team_id
+    end
+
+    games_by_type_of_season[:regular_season].delete_if do |game|
+      game.away_team_id != team_id && game.home_team_id != team_id
+    end
+
+    games_by_type_of_season
+
+  end
 
   def goals_scored(team_id,games) # could this be a team method?
     goals = 0
@@ -396,33 +399,6 @@ class StatTracker
     end
     goals
   end
-
-# def season_summary(season_id, team_id)
-#   summary = {}
-#   by_season_type_for_given_team = games_by_season_type(season_id, team_id)
-#   preseason_stats = {}
-#   regular_season_stats = {}
-#
-#   preseason_games = by_season_type_for_given_team[:preseason]
-#   regular_games = by_season_type_for_given_team[:regular_season]
-#
-#   preseason_wins = win_percentage(team_id, preseason_games)
-#   regular_wins = win_percentage(team_id, regular_games)
-#
-#   preseason_goals = goals_scored(team_id, preseason_games)
-#   regular_goals = goals_scored(team_id,regular_games)
-#
-#   preseason_stats[:win_percentage] = preseason_wins
-#   preseason_stats[:goals_scored] = preseason_goals
-#
-#   regular_season_stats[:win_percentage] = regular_wins
-#   regular_season_stats[:goals_scored] = regular_goals
-#
-#   summary[:preseason] = preseason_stats
-#   summary[:regular_season] = regular_season_stats
-#
-#   summary
-# end
 
   def count_of_teams
     @teams.count
