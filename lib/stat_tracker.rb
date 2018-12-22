@@ -26,9 +26,11 @@ class StatTracker
     game_team_instance(info_hash[:game_teams])
   end
 
-  def self.from_csv(data)
+  def self.from_csv(data) ###### maybe load the csvs to local variables??
     StatTracker.new(data)
   end
+
+ ####################### Instance Creation###########################
 
   def game_instance(game_file)
     CSV.foreach(game_file, headers: true, header_converters: :symbol) do |row|
@@ -56,6 +58,9 @@ class StatTracker
   # def team_info(id)
   #   @team_stats.get_team_info(id)
   # end
+
+#################################GAME ANALYTICS FOR ALL GAMES FOR ALL TEAMS#############
+
 
   def highest_total_score
     max_game = @games.max_by do |game|
@@ -109,14 +114,47 @@ class StatTracker
     blowout_game.score_difference
   end
 
-  def game_count_by_venue
-    venue_events = @games.group_by do |game|
-      game.venue
+##########################GAME ANALYTICS FOR ALL TEAMS AT HOME###################
+
+  def percentage_home_wins
+    games_won_by_home = games.find_all do |game|
+      game.outcome[0..3] == "home"
     end
-    venue_events.map do |venue, games|
-      [venue, games.count]
+    (games_won_by_home.count.to_f / games.count * 100).round(2)
+  end
+
+#############################TEAM ANALYTICS#######################
+
+  def team_info(id)
+    found_team = @teams.find do |team|
+      team.team_id == id
+    end
+    team_hash = Hash.new
+    team_hash[id] = found_team.provide_info
+  end
+
+
+############################GAME ANALYTICS HELPER METHODS#########################
+
+  def games_by_season
+    @games.group_by do |game|
+      game.season
     end
   end
+
+  def preseason_games
+    @games.find_all do |game|
+      game.type == "P"
+    end
+  end
+
+  def reg_season_games
+    @games.find_all do |game|
+      game.type == "R"
+    end
+  end
+
+
 
   def most_popular_venue
     most_popular = game_count_by_venue.max_by do |venue_count|
@@ -130,6 +168,17 @@ class StatTracker
       venue_count.last
     end
     return least_popular.first
+  end
+
+############ HELPER METHOD FOR THE VENUE METHODS
+
+  def game_count_by_venue
+    venue_events = @games.group_by do |game|
+      game.venue
+    end
+    venue_events.map do |venue, games|
+      [venue, games.count]
+    end
   end
 
   def count_of_games_by_season
@@ -159,18 +208,8 @@ class StatTracker
 
   def lowest_scoring_visitor
     lowest_scoring_away_team = teams.min_by do |team|
-      total_away_points = games.sum do |game| # team method
-        if team.team_id == game.away_team_id
-          game.away_goals
-        else
-          0
-        end
-      end
-      games_played_as_visitor = games.count do |game| # team method
-        game.away_team_id == team.team_id
-      end
-      if games_played_as_visitor != 0
-        total_away_points.to_f / games_played_as_visitor
+      if team.games_played_as_visitor(games) != 0
+        team.total_away_points(games).to_f / team.games_played_as_visitor(games)
       else
         100
       end
@@ -180,18 +219,8 @@ class StatTracker
 
   def lowest_scoring_home_team
     lowest_scoring_home_team = teams.min_by do |team|
-      total_home_points = games.sum do |game|
-        if team.team_id == game.home_team_id
-          game.home_goals
-        else
-          0
-        end
-      end
-      games_played_as_home_team = games.count do |game|
-        game.home_team_id == team.team_id
-      end
-      if games_played_as_home_team != 0
-        total_home_points.to_f / games_played_as_home_team
+      if team.games_played_as_home_team(games) != 0
+        team.total_home_points(games).to_f / team.games_played_as_home_team(games)
       else
         100
       end
@@ -201,18 +230,8 @@ class StatTracker
 
   def highest_scoring_home_team
     highest_scoring_home_team = teams.max_by do |team|
-      total_home_points = games.sum do |game| # team method
-        if team.team_id == game.home_team_id
-          game.home_goals
-        else
-          0
-        end
-      end
-      games_played_as_home_team = games.count do |game| # team method
-        game.home_team_id == team.team_id
-      end
-      if games_played_as_home_team != 0
-        total_home_points.to_f / games_played_as_home_team
+      if team.games_played_as_home_team(games) != 0
+        team.total_home_points(games).to_f / team.games_played_as_home_team(games)
       else
         0
       end
@@ -222,18 +241,8 @@ class StatTracker
 
   def highest_scoring_visitor
     highest_scoring_away_team = teams.max_by do |team|
-      total_away_points = games.sum do |game| # team method
-        if team.team_id == game.away_team_id
-          game.away_goals
-        else
-          0
-        end
-      end
-      games_played_as_visitor = games.count do |game| # team method
-        game.away_team_id == team.team_id
-      end
-      if games_played_as_visitor != 0
-        total_away_points.to_f / games_played_as_visitor
+      if team.games_played_as_visitor(games) != 0
+        team.total_away_points(games).to_f / team.games_played_as_visitor(games)
       else
         0
       end
@@ -243,23 +252,7 @@ class StatTracker
 
   def winningest_team
     team_with_highest_win_percentage = @teams.max_by do |team|
-      total_wins = @games.inject(0) do |wins, game| # team method?
-        if team.team_id == game.away_team_id && game.outcome.include?("away")
-          wins + 1
-        elsif team.team_id == game.home_team_id && game.outcome.include?("home")
-          wins + 1
-        else
-          wins
-        end
-      end
-      total_games_played = @games.inject(0) do |total_played, game| # team method?
-        if team.team_id == game.away_team_id || team.team_id == game.home_team_id
-          total_played + 1
-        else
-          total_played
-        end
-      end
-      total_wins.to_f / total_games_played
+      team.number_of_games_won(games).to_f / team.games_played_in(games).count
     end
     team_with_highest_win_percentage.team_name
   end
@@ -376,12 +369,13 @@ class StatTracker
     largest_increase_in_percentage.team_name
   end
 
+  #
   # def season_summary(season_id, team_id)
-    # team method that returns preseason summary hash
+    # team method that returns preseason summary hash (preseason_summary)
     # {team method for preseason_win_percentage
     # team method for preseason_goals_scored
     # team method for preseason_goals_against}
-    # same thing for reg season
+    # same thing for reg season (reg_season_summary)
     # hash with preseason summary hash and regular season summary hash
 
   def home_win_percentages(team_id, games)
@@ -485,51 +479,48 @@ class StatTracker
   end
 
 
-def games_by_season_type(season_id, team_id)
+  def games_by_season_type(season_id, team_id)
 
-  games_by_type_of_season = Hash.new
-  games_in_season = all_games_by_season[season_id]
 
-  preseason = games_in_season.select do |game|
-    game.type == "P"
+    games_by_type_of_season = Hash.new
+    games_in_season = games_by_season[season_id]
+
+
+    preseason = games_in_season.select do |game|
+      game.type == "P"
+    end
+
+    regular_season = games_in_season.select do |game|
+      game.type == "R"
+    end
+
+    games_by_type_of_season[:preseason] = preseason
+    games_by_type_of_season[:regular_season] = regular_season
+
+    games_by_type_of_season[:preseason].delete_if do |game|
+      game.away_team_id != team_id && game.home_team_id != team_id
+    end
+
+    games_by_type_of_season[:regular_season].delete_if do |game|
+      game.away_team_id != team_id && game.home_team_id != team_id
+    end
+
+    games_by_type_of_season
+
   end
 
-  regular_season = games_in_season.select do |game|
-    game.type == "R"
+  def goals_scored(team_id,games)
+    goals = 0
+    games.each do |game|
+      if game.away_team_id == team_id
+        goals =+ game.away_goals
+      else
+        goals += game.home_goals
+      end
+    end
+    goals
   end
 
-  games_by_type_of_season[:preseason] = preseason
-  games_by_type_of_season[:regular_season] = regular_season
-
-  games_by_type_of_season[:preseason].delete_if do |game|
-    game.away_team_id != team_id && game.home_team_id != team_id
-  end
-
-  games_by_type_of_season[:regular_season].delete_if do |game|
-    game.away_team_id != team_id && game.home_team_id != team_id
-  end
-
-  games_by_type_of_season
-
-end
-
-def win_percentage(team_id,games)
-  (away_win_percentages(team_id, games) + home_win_percentages(team_id, games)).to_f/2
-end
-
-# def goals_scored(team_id,games)
-#   goals = 0
-#   games.each do |game|
-#     if game.away_team_id == team_id
-#       goals =+ game.away_goals
-#     else
-#       goals += game.home_goals
-#     end
-# end
-# goals
-# end
-#
-#
 # def season_summary(season_id, team_id)
 #   summary = {}
 #   by_season_type_for_given_team = games_by_season_type(season_id, team_id)

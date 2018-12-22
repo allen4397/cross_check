@@ -1,6 +1,7 @@
 require './test/test_helper'
 require 'minitest/autorun'
 require 'minitest/pride'
+require 'mocha/minitest'
 require './lib/game'
 require './lib/stat_tracker'
 require 'pry'
@@ -42,4 +43,72 @@ class TeamTest < Minitest::Test
 
   end
 
+  def test_it_can_calculate_win_percentage
+    team = @stat_tracker.teams[0]
+    assert_equal 80.0 , team.win_percentage(@stat_tracker.games)
+  end
+
+  def test_it_can_calculate_total_away_points
+    team = @stat_tracker.teams[0]
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+    @stat_tracker.games = [game_1, game_2, game_3]
+
+    game_1.stubs(:away_team_id).returns("3")
+    game_2.stubs(:away_team_id).returns("6")
+    game_3.stubs(:away_team_id).returns("6")
+
+    game_1.stubs(:away_goals).returns(3)
+    game_2.stubs(:away_goals).returns(5)
+    game_3.stubs(:away_goals).returns(2)
+
+    assert_equal 7, team.total_away_points(@stat_tracker.games)
+  end
+
+  def test_it_can_calculate_total_home_points
+    team = @stat_tracker.teams[0]
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+    @stat_tracker.games = [game_1, game_2, game_3]
+
+    game_1.stubs(:home_team_id).returns("6")
+    game_2.stubs(:home_team_id).returns("3")
+    game_3.stubs(:home_team_id).returns("6")
+
+    game_1.stubs(:home_goals).returns(4)
+    game_2.stubs(:home_goals).returns(3)
+    game_3.stubs(:home_goals).returns(1)
+
+    assert_equal 5, team.total_home_points(@stat_tracker.games)
+  end
+
+  def test_it_can_calculate_number_of_games_played_as_visitor
+    team = @stat_tracker.teams[0]
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+    @stat_tracker.games = [game_1, game_2, game_3]
+
+    game_1.stubs(:away_team_id).returns("3")
+    game_2.stubs(:away_team_id).returns("6")
+    game_3.stubs(:away_team_id).returns("6")
+
+    assert_equal 2, team.games_played_as_visitor(@stat_tracker.games)
+  end
+
+  def test_it_can_calculate_number_of_games_played_as_home_team
+    team = @stat_tracker.teams[0]
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+    @stat_tracker.games = [game_1, game_2, game_3]
+
+    game_1.stubs(:home_team_id).returns("3")
+    game_2.stubs(:home_team_id).returns("3")
+    game_3.stubs(:home_team_id).returns("6")
+
+    assert_equal 1, team.games_played_as_home_team(@stat_tracker.games)
+  end
 end
