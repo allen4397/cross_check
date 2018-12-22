@@ -73,4 +73,6 @@ module TeamStats
     return min_goals.goals.to_i
   end
 
+  def biggest_blowout
+  end
 end

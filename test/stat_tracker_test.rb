@@ -482,7 +482,4 @@ class StatTrackerTest < Minitest::Test
     assert [reg_season_game_1, reg_season_game_2], @stat_tracker.group_games_by_season_type("R")
   end
 
-  def test_it_can_calculate_biggest_team_blowout
-    assert_equal 3, @stat_tracker.biggest_team_blowout("6")
-  end
 end
