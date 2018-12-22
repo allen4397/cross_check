@@ -30,4 +30,19 @@ class Team
                   abbreviation: @abbreviation,
                   link: @link}
   end
+
+  def win_percentage(games)
+   number_of_games_won(games)/game_count_by_team_id(@team_id).to_f * 100
+  end
+
+  def number_of_games_won(games)
+   games_won = []
+   games.each do |game|
+     if game.away_team_id == @team_id && game.outcome.include?("away") || game.home_team_id == @team_id && game.outcome.include?("home")
+       games_won << game
+     end
+   end
+   return games_won.count
+  end
+
 end
