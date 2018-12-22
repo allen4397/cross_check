@@ -3,12 +3,18 @@ require_relative 'game'
 require_relative 'team'
 require 'pry'
 require_relative 'game_team'
+require_relative 'team_stats'
+require_relative 'game_stats'
+require_relative 'game_team_stats'
 
 class StatTracker
+  include TeamStats, GameStats, GameTeamStats
+
   attr_accessor :teams,
                 :games
 
-  attr_reader :game_teams
+  attr_reader :game_teams,
+              :team_stats
 
   def initialize(info_hash)
     @games = []
@@ -34,8 +40,13 @@ class StatTracker
 
   def team_instance(team_file)
     CSV.foreach(team_file, headers: true, header_converters: :symbol) do |row|
-      @teams << Team.new(row)
+      team = Team.new(row)
+      @teams << team
     end
+  end
+
+  def games_by_team_instance(team)
+    team.team_id
   end
 
   def game_team_instance(game_team_file)
@@ -44,13 +55,25 @@ class StatTracker
     end
   end
 
+  # def team_info(id)
+  #   @team_stats.get_team_info(id)
+  # end
+
 #################################GAME ANALYTICS FOR ALL GAMES FOR ALL TEAMS#############
+
 
   def highest_total_score
     max_game = @games.max_by do |game|
       game.total_score
     end
     max_game.total_score
+  end
+
+  def percentage_home_wins
+    games_won_by_home = games.find_all do |game|
+      game.outcome[0..3] == "home"
+    end
+    (games_won_by_home.count.to_f / games.count * 100).round(2)
   end
 
   def average_goals_per_game
@@ -60,9 +83,15 @@ class StatTracker
     (total_goals.to_f/@games.length.to_f).round(2)
   end
 
+  def all_games_by_season
+    @games.group_by do |game|
+      game.season
+    end
+  end
+
   def average_goals_by_season
     average_by_season = {}
-    games_by_season.each do |season, games|
+    all_games_by_season.each do |season, games|
       total_score_for_season = games.inject(0) do |sum, game|
         sum + game.total_score
       end
@@ -127,13 +156,6 @@ class StatTracker
 
 
 
-
-
-
-
-
-
-
   def most_popular_venue
     most_popular = game_count_by_venue.max_by do |venue_count|
       venue_count.last
@@ -161,7 +183,7 @@ class StatTracker
 
   def count_of_games_by_season
     game_count_by_season = {}
-    games_by_season.each do |season, games|
+    all_games_by_season.each do |season, games|
       game_count_by_season[season] = games.count
     end
     return game_count_by_season
@@ -346,6 +368,7 @@ class StatTracker
     end
     largest_increase_in_percentage.team_name
   end
+
   #
   # def season_summary(season_id, team_id)
     # team method that returns preseason summary hash (preseason_summary)
@@ -458,8 +481,10 @@ class StatTracker
 
   def games_by_season_type(season_id, team_id)
 
+
     games_by_type_of_season = Hash.new
     games_in_season = games_by_season[season_id]
+
 
     preseason = games_in_season.select do |game|
       game.type == "P"
