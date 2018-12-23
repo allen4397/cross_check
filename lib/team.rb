@@ -42,13 +42,7 @@ class Team
   end
 
   def number_of_games_won(games)
-    games_won = 0
-    games.each do |game|
-      if game.away_team_id == @team_id && game.outcome.include?("away") || game.home_team_id == @team_id && game.outcome.include?("home")
-        games_won += 1
-      end
-    end
-    return games_won
+    games_won(games).count
   end
 
   def games_played_in(games)
