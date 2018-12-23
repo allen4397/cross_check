@@ -16,7 +16,7 @@ module TeamStats
   end
 
   def seasons_by_team(team_id)
-    games_by_team(team_id).map do |game|
+    find_games_by_team_id(team_id).map do |game|
       game.season
     end.uniq
   end

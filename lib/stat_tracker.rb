@@ -6,9 +6,11 @@ require_relative 'game_team'
 require_relative 'team_stats'
 require_relative 'game_stats'
 require_relative 'game_team_stats'
+require_relative 'season_stats'
+require_relative 'venue_stats'
 
 class StatTracker
-  include TeamStats, GameStats, GameTeamStats
+  include TeamStats, GameStats, GameTeamStats, SeasonStats, VenueStats
 
   attr_accessor :teams,
                 :games,
@@ -59,69 +61,17 @@ class StatTracker
 
 #################################GAME ANALYTICS FOR ALL GAMES FOR ALL TEAMS#############
 
-  def all_games_by_season
-    @games.group_by do |game|
-      game.season
-    end
-  end
 
-
-#############################TEAM ANALYTICS#######################
-
-  def team_info(id) #This is ready to be deleted once confirmed
-    found_team = @teams.find do |team|
-      team.team_id == id
-    end
-    team_hash = Hash.new
-    team_hash[id] = found_team.provide_info
-  end
 
 
 ############################GAME ANALYTICS HELPER METHODS#########################
 
 
-  def most_popular_venue
-    most_popular = game_count_by_venue.max_by do |venue_count|
-      venue_count.last
-    end
-    return most_popular.first
-  end
 
-  def least_popular_venue
-    least_popular = game_count_by_venue.min_by do |venue_count|
-      venue_count.last
-    end
-    return least_popular.first
-  end
 
 ############ HELPER METHOD FOR THE VENUE METHODS
 
-  def game_count_by_venue
-    venue_events = @games.group_by do |game|
-      game.venue
-    end
-    venue_events.map do |venue, games|
-      [venue, games.count]
-    end
-  end
 
-  def count_of_games_by_season
-    game_count_by_season = {}
-    all_games_by_season.each do |season, games|
-      game_count_by_season[season] = games.count
-    end
-    return game_count_by_season
-  end
-
-  def season_with_most_games
-    highest_count = count_of_games_by_season.values.max
-    count_of_games_by_season.key(highest_count).to_i
-  end
-
-  def season_with_fewest_games
-    lowest_count = count_of_games_by_season.values.min
-    count_of_games_by_season.key(lowest_count).to_i
-  end
 
   def lowest_scoring_visitor
     lowest_scoring_away_team = teams.min_by do |team|
@@ -172,12 +122,6 @@ class StatTracker
       team.number_of_games_won(games).to_f / team.games_played_in(games).count
     end
     team_with_highest_win_percentage.team_name
-  end
-
-  def group_games_by_season_type(type, games = @games)
-    games.select do |game|
-      game.type == type
-    end
   end
 
   def biggest_bust(season_id)
@@ -377,26 +321,6 @@ class StatTracker
     get_team_name_from_id(team_id)
   end
 
-
-
-  def season_summary(season_id, team_id)
-    team = find_team(team_id)
-
-    games = games_by_team_by_season(season_id, team_id)
-    preseason = group_games_by_season_type("P", games)
-    reg_season = group_games_by_season_type("R", games)
-
-    preseason_hash = { :win_percentage => team.win_percentage(preseason),
-                        :goals_scored => team.goals_scored(preseason),
-                        :goals_against => get_opponent_goals(team_id, preseason)}
-
-    reg_season_hash = { :win_percentage => team.win_percentage(reg_season),
-                        :goals_scored => team.goals_scored(reg_season),
-                        :goals_against => get_opponent_goals(team_id, reg_season)}
-
-    {:preseason => preseason_hash,
-    :regular_season => reg_season_hash}
-  end
 
   def get_opponent_goals(team_id, games = @games)
     goals = 0

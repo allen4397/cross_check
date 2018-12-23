@@ -66,6 +66,13 @@ module GameStats
       (games_won_by_visitor.count.to_f / games.count * 100).round(2)
     end
 
+    def all_games_by_season
+      @games.group_by do |game|
+        game.season
+      end
+    end
+
+
 
 
 
