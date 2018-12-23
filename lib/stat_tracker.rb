@@ -48,7 +48,6 @@ class StatTracker
   end
 
 #not sure what this method is for:
-
   # def games_by_team_instance(team)
   #   team.team_id
   # end
@@ -207,7 +206,7 @@ class StatTracker
     end
   end
 
-  def games_by_team_id(team_id) #returns game_team_instance
+  def games_by_team_id(team_id) #returns game_team_instance?
     games_by_all_team_ids[team_id]
   end
 
