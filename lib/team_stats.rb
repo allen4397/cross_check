@@ -36,30 +36,6 @@ module TeamStats
     find_games_by_team_id(team_id, all_games_by_season[season])
   end
 
-  def seasons_by_win_percentage(team_id)
-    win_perc_seasons = {}
-    seasons_by_team(team_id).each do |season|
-      win_perc_seasons[season] = find_team(team_id).win_percentage(games_by_team_by_season(season, team_id))
-    end
-    return win_perc_seasons
-  end
-
-  def best_season(team_id)
-    highest_win_percentage = seasons_by_win_percentage(team_id).values.max
-    seasons_by_win_percentage(team_id).key(highest_win_percentage)
-  end
-
-  def worst_season(team_id)
-    lowest_win_percentage = seasons_by_win_percentage(team_id).values.min
-    seasons_by_win_percentage(team_id).key(lowest_win_percentage)
-  end
-
-  def average_win_percentage(team_id)
-    total = seasons_by_win_percentage(team_id).values.sum
-    count = seasons_by_win_percentage(team_id).count
-    total / count
-  end
-
   def most_goals_scored(team_id) #this uses game_teams, not games
     max_goals = games_by_team_id(team_id).max_by do |game_team|
       game_team.goals
