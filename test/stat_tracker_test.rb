@@ -75,7 +75,6 @@ class StatTrackerTest < Minitest::Test
     }
 
     stat_tracker_2 = StatTracker.from_csv(locations)
-
     assert_equal 80.0, stat_tracker_2.percentage_home_wins
   end
 
@@ -125,7 +124,7 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_gets_game_count_by_venue
-    
+
     expected = [["TD Garden", 3], ["Madison Square Garden", 3], ["Honda Center", 1], ["Scottrade Center", 2], ["United Center", 2]]
 
     assert_equal expected, @stat_tracker.game_count_by_venue
@@ -151,8 +150,8 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_gets_season_with_fewest_games
-    skip
-    assert_equal 20152016, @stat_tracker.season_with_fewest_games
+
+    assert_equal 20132014, @stat_tracker.season_with_fewest_games
   end
 
   def test_it_gets_games_by_season
@@ -421,39 +420,39 @@ class StatTrackerTest < Minitest::Test
     assert_equal "Blackhawks", @stat_tracker.get_team_name_from_id("16")
   end
 
-  def test_it_can_collect_preseason_games
-    game_1 = mock
-    game_2 = mock
-    game_3 = mock
-    game_4 = mock
-
-
-    @stat_tracker.games = [game_1, game_2, game_3, game_4]
-
-    game_1.stubs(:type).returns("P")
-    game_2.stubs(:type).returns("R")
-    game_3.stubs(:type).returns("P")
-    game_4.stubs(:type).returns("R")
-
-    assert_equal [game_1, game_3], @stat_tracker.preseason_games
-  end
-
-  def test_it_can_collect_reg_season_games
-    game_1 = mock
-    game_2 = mock
-    game_3 = mock
-    game_4 = mock
-
-
-    @stat_tracker.games = [game_1, game_2, game_3, game_4]
-
-    game_1.stubs(:type).returns("P")
-    game_2.stubs(:type).returns("R")
-    game_3.stubs(:type).returns("P")
-    game_4.stubs(:type).returns("R")
-
-    assert_equal [game_2, game_4], @stat_tracker.reg_season_games
-  end
+  # def test_it_can_collect_preseason_games
+  #   game_1 = mock
+  #   game_2 = mock
+  #   game_3 = mock
+  #   game_4 = mock
+  #
+  #
+  #   @stat_tracker.games = [game_1, game_2, game_3, game_4]
+  #
+  #   game_1.stubs(:type).returns("P")
+  #   game_2.stubs(:type).returns("R")
+  #   game_3.stubs(:type).returns("P")
+  #   game_4.stubs(:type).returns("R")
+  #
+  #   assert_equal [game_1, game_3], @stat_tracker.preseason_games
+  # end
+  #
+  # def test_it_can_collect_reg_season_games
+  #   game_1 = mock
+  #   game_2 = mock
+  #   game_3 = mock
+  #   game_4 = mock
+  #
+  #
+  #   @stat_tracker.games = [game_1, game_2, game_3, game_4]
+  #
+  #   game_1.stubs(:type).returns("P")
+  #   game_2.stubs(:type).returns("R")
+  #   game_3.stubs(:type).returns("P")
+  #   game_4.stubs(:type).returns("R")
+  #
+  #   assert_equal [game_2, game_4], @stat_tracker.reg_season_games
+  # end
 
   def test_it_can_return_an_array_of_games_by_season_type
     reg_season_game_1 = mock
@@ -549,7 +548,7 @@ class StatTrackerTest < Minitest::Test
     @stat_tracker.teams = [team_1, team_2]
 
     expected = [game_1, game_3]
-    assert_equal expected, @stat_tracker.group_games_by_season_and_team("20122013", "1")
+    assert_equal expected, @stat_tracker.games_by_team_by_season("20122013", "1")
   end
 
   def test_it_can_return_an_array_of_games_by_team_id

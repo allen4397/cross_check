@@ -45,9 +45,11 @@ class StatTracker
     end
   end
 
-  def games_by_team_instance(team)
-    team.team_id
-  end
+#not sure what this method is for:
+
+  # def games_by_team_instance(team)
+  #   team.team_id
+  # end
 
   def game_team_instance(game_team_file)
     CSV.foreach(game_team_file, headers: true, header_converters: :symbol) do |row|
@@ -57,72 +59,12 @@ class StatTracker
 
 #################################GAME ANALYTICS FOR ALL GAMES FOR ALL TEAMS#############
 
-
-  def highest_total_score
-    max_game = @games.max_by do |game|
-      game.total_score
-    end
-    max_game.total_score
-  end
-
-  def percentage_home_wins
-    games_won_by_home = games.find_all do |game|
-      game.outcome[0..3] == "home"
-    end
-    (games_won_by_home.count.to_f / games.count * 100).round(2)
-  end
-
-  def average_goals_per_game
-    total_goals = @games.sum do |game|
-      game.total_score
-    end
-    (total_goals.to_f/@games.length.to_f).round(2)
-  end
-
   def all_games_by_season
     @games.group_by do |game|
       game.season
     end
   end
 
-  def average_goals_by_season
-    average_by_season = {}
-    all_games_by_season.each do |season, games|
-      total_score_for_season = games.inject(0) do |sum, game|
-        sum + game.total_score
-      end
-      average_by_season[season] = (total_score_for_season.to_f/games.flatten.count).round(2)
-    end
-    average_by_season
-  end
-
-  def lowest_total_score
-    min_game = @games.min_by do |game|
-      game.total_score
-    end
-    min_game.total_score
-  end
-
-  def biggest_blowout
-    blowout_game = @games.max_by do |game|
-      game.score_difference
-    end
-    blowout_game.score_difference
-  end
-
-  def percentage_home_wins
-    games_won_by_home = games.find_all do |game|
-      game.outcome[0..3] == "home"
-    end
-    (games_won_by_home.count.to_f / games.count * 100).round(2)
-  end
-
-  def percentage_visitor_wins
-    games_won_by_visitor = games.find_all do |game|
-      game.outcome[0..3] == "away"
-    end
-    (games_won_by_visitor.count.to_f / games.count * 100).round(2)
-  end
 
 #############################TEAM ANALYTICS#######################
 
@@ -137,23 +79,6 @@ class StatTracker
 
 ############################GAME ANALYTICS HELPER METHODS#########################
 
-  def games_by_season
-    @games.group_by do |game|
-      game.season
-    end
-  end
-
-  def preseason_games(games = @games)
-    games.find_all do |game|
-      game.type == "P"
-    end
-  end
-
-  def reg_season_games(games = @games)
-    games.find_all do |game|
-      game.type == "R"
-    end
-  end
 
   def most_popular_venue
     most_popular = game_count_by_venue.max_by do |venue_count|
@@ -358,46 +283,6 @@ class StatTracker
     end
   end
 
-  def games_by_season_type(season_id, team_id)
-    games_by_type_of_season = {}
-    games_in_season = games_by_season[season_id]
-
-
-    preseason = games_in_season.select do |game|
-      game.type == "P"
-    end
-
-    regular_season = games_in_season.select do |game|
-      game.type == "R"
-    end
-
-    games_by_type_of_season[:preseason] = preseason
-    games_by_type_of_season[:regular_season] = regular_season
-
-    games_by_type_of_season[:preseason].delete_if do |game|
-      game.away_team_id != team_id && game.home_team_id != team_id
-    end
-
-    games_by_type_of_season[:regular_season].delete_if do |game|
-      game.away_team_id != team_id && game.home_team_id != team_id
-    end
-
-    games_by_type_of_season
-
-  end
-
-  def goals_scored(team_id,games) # could this be a team method?
-    goals = 0
-    games.each do |game|
-      if game.away_team_id == team_id
-        goals =+ game.away_goals
-      else
-        goals += game.home_goals
-      end
-    end
-    goals
-  end
-
   def count_of_teams
     @teams.count
   end
@@ -492,23 +377,12 @@ class StatTracker
     get_team_name_from_id(team_id)
   end
 
-  def find_games_by_team_id(team_id, games = @games)
-    games.select do |game|
-      game.away_team_id == team_id || game.home_team_id == team_id
-    end
 
-  end
-
-  def group_games_by_season_and_team(season_id, team_id)
-    all_games_in_season = games_by_season[season_id]
-    all_games_a_team_played = find_games_by_team_id(team_id)
-    all_games_in_season & all_games_a_team_played
-  end
 
   def season_summary(season_id, team_id)
     team = find_team(team_id)
 
-    games = group_games_by_season_and_team(season_id, team_id)
+    games = games_by_team_by_season(season_id, team_id)
     preseason = group_games_by_season_type("P", games)
     reg_season = group_games_by_season_type("R", games)
 
