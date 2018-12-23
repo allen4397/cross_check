@@ -41,6 +41,12 @@ class Team
     end
   end
 
+  def games_lost(games)
+    games.find_all do |game|
+      game.away_team_id == @team_id && game.outcome.include?("home") || game.home_team_id == @team_id && game.outcome.include?("away")
+    end
+  end
+
   def number_of_games_won(games)
     games_won(games).count
   end
