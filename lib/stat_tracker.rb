@@ -11,10 +11,10 @@ class StatTracker
   include TeamStats, GameStats, GameTeamStats
 
   attr_accessor :teams,
-                :games
+                :games,
+                :game_teams
 
-  attr_reader :game_teams,
-              :team_stats
+  attr_reader :team_stats
 
   def initialize(info_hash)
     @games = []
@@ -143,14 +143,14 @@ class StatTracker
     end
   end
 
-  def preseason_games
-    @games.find_all do |game|
+  def preseason_games(games = @games)
+    games.find_all do |game|
       game.type == "P"
     end
   end
 
-  def reg_season_games
-    @games.find_all do |game|
+  def reg_season_games(games = @games)
+    games.find_all do |game|
       game.type == "R"
     end
   end
@@ -256,8 +256,8 @@ class StatTracker
   end
 
   def biggest_bust(season_id)
-    regular_season = group_games_by_season_type(("R"), games_by_season[season_id])
-    preseason = group_games_by_season_type(("P"), games_by_season[season_id])
+    regular_season = group_games_by_season_type("R", games_by_season[season_id])
+    preseason = group_games_by_season_type("P", games_by_season[season_id])
     largest_decrease_in_percentage = @teams.max_by do |team|
       team.win_percentage(preseason)/team.win_percentage(regular_season)
     end
@@ -265,8 +265,8 @@ class StatTracker
   end
 
   def biggest_surprise(season_id)
-    regular_season = group_games_by_season_type(("R"), games_by_season[season_id])
-    preseason = group_games_by_season_type(("P"), games_by_season[season_id])
+    regular_season = group_games_by_season_type("R", games_by_season[season_id])
+    preseason = group_games_by_season_type("P", games_by_season[season_id])
     largest_increase_in_percentage = @teams.max_by do |team|
       team.win_percentage(regular_season)/team.win_percentage(preseason)
     end
@@ -359,9 +359,7 @@ class StatTracker
   end
 
   def games_by_season_type(season_id, team_id)
-
-
-    games_by_type_of_season = Hash.new
+    games_by_type_of_season = {}
     games_in_season = games_by_season[season_id]
 
 
@@ -410,7 +408,7 @@ class StatTracker
     end
   end
 
-  def games_by_team_id(team_id)
+  def games_by_team_id(team_id) #returns game_team_instance
     games_by_all_team_ids[team_id]
   end
 
@@ -493,4 +491,51 @@ class StatTracker
     team_id = all_teams_opponent_averages.key(all_teams_opponent_averages.values.max)
     get_team_name_from_id(team_id)
   end
+
+  def find_games_by_team_id(team_id, games = @games)
+    games.select do |game|
+      game.away_team_id == team_id || game.home_team_id == team_id
+    end
+
+  end
+
+  def group_games_by_season_and_team(season_id, team_id)
+    all_games_in_season = games_by_season[season_id]
+    all_games_a_team_played = find_games_by_team_id(team_id)
+    all_games_in_season & all_games_a_team_played
+  end
+
+  def season_summary(season_id, team_id)
+    team = find_team(team_id)
+
+    games = group_games_by_season_and_team(season_id, team_id)
+    preseason = group_games_by_season_type("P", games)
+    reg_season = group_games_by_season_type("R", games)
+
+    preseason_hash = { :win_percentage => team.win_percentage(preseason),
+                        :goals_scored => team.goals_scored(preseason),
+                        :goals_against => get_opponent_goals(team_id, preseason)}
+
+    reg_season_hash = { :win_percentage => team.win_percentage(reg_season),
+                        :goals_scored => team.goals_scored(reg_season),
+                        :goals_against => get_opponent_goals(team_id, reg_season)}
+
+    {:preseason => preseason_hash,
+    :regular_season => reg_season_hash}
+  end
+
+  def get_opponent_goals(team_id, games = @games)
+    goals = 0
+    games.each do |game|
+      if game.away_team_id == team_id
+        goals += game.home_goals
+      elsif game.home_team_id == team_id
+        goals += game.away_goals
+      end
+    end
+    goals
+
+  end
+
+
 end

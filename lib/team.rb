@@ -32,7 +32,7 @@ class Team
   end
 
   def win_percentage(games)
-    number_of_games_won(games)/games_played_in(games).count.to_f * 100
+    (number_of_games_won(games)/games_played_in(games).count.to_f * 100).round(2)
   end
 
   def number_of_games_won(games)
@@ -71,6 +71,10 @@ class Team
     end
   end
 
+  def goals_scored(games)
+    total_home_points(games) + total_away_points(games)
+  end
+
   def games_played_as_visitor(games)
     games.count do |game|
       game.away_team_id == team_id
@@ -82,4 +86,6 @@ class Team
       game.home_team_id == team_id
     end
   end
+
+
 end
