@@ -43,9 +43,19 @@ class TeamTest < Minitest::Test
 
   end
 
+  def test_it_can_return_games_won
+    game_1 = @stat_tracker.games[0]
+    game_2 = @stat_tracker.games[1]
+    game_3 = @stat_tracker.games[2]
+    game_4 = @stat_tracker.games[4]
+    game_5 = @stat_tracker.games[10]
+
+    assert_equal [game_1, game_2, game_3, game_4, game_5], @stat_tracker.teams[0].games_won(@stat_tracker.games)
+  end
+
   def test_it_can_calculate_win_percentage
     team = @stat_tracker.teams[0]
-    assert_equal 80.0 , team.win_percentage(@stat_tracker.games)
+    assert_equal 83.33 , team.win_percentage(@stat_tracker.games)
   end
 
   def test_it_can_calculate_total_away_points

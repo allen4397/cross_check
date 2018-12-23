@@ -73,6 +73,8 @@ module TeamStats
     return min_goals.goals.to_i
   end
 
-  def biggest_blowout
+  def biggest_team_blowout(team_id)
+    # games won by team
+    # score_difference
   end
 end
