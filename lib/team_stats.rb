@@ -74,7 +74,11 @@ module TeamStats
   end
 
   def biggest_team_blowout(team_id)
-    # games won by team
-    # score_difference
+    team = find_team(team_id)
+    games_won = team.games_won(@games)
+    biggest_team_blowout = games_won.max_by do |game|
+      game.score_difference
+    end
+    biggest_team_blowout.score_difference
   end
 end
