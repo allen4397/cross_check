@@ -58,20 +58,7 @@ class StatTracker
       @game_teams << GameTeam.new(row)
     end
   end
-
-#################################GAME ANALYTICS FOR ALL GAMES FOR ALL TEAMS#############
-
-
-
-
-############################GAME ANALYTICS HELPER METHODS#########################
-
-
-
-
-############ HELPER METHOD FOR THE VENUE METHODS
-
-
+########### HELPER METHOD FOR THE VENUE METHODS
 
   def lowest_scoring_visitor
     lowest_scoring_away_team = teams.min_by do |team|
@@ -124,23 +111,6 @@ class StatTracker
     team_with_highest_win_percentage.team_name
   end
 
-  def biggest_bust(season_id)
-    regular_season = group_games_by_season_type("R", games_by_season[season_id])
-    preseason = group_games_by_season_type("P", games_by_season[season_id])
-    largest_decrease_in_percentage = @teams.max_by do |team|
-      team.win_percentage(preseason)/team.win_percentage(regular_season)
-    end
-    largest_decrease_in_percentage.team_name
-  end
-
-  def biggest_surprise(season_id)
-    regular_season = group_games_by_season_type("R", games_by_season[season_id])
-    preseason = group_games_by_season_type("P", games_by_season[season_id])
-    largest_increase_in_percentage = @teams.max_by do |team|
-      team.win_percentage(regular_season)/team.win_percentage(preseason)
-    end
-    largest_increase_in_percentage.team_name
-  end
 
   def home_win_percentages(team_id, games)
     games_played_at_home = games.select do |game|

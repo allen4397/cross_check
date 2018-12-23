@@ -43,7 +43,24 @@ module SeasonStats
     :regular_season => reg_season_hash}
   end
 
-  
+
+    def biggest_bust(season_id)
+      regular_season = group_games_by_season_type("R", games_by_season[season_id])
+      preseason = group_games_by_season_type("P", games_by_season[season_id])
+      largest_decrease_in_percentage = @teams.max_by do |team|
+        team.win_percentage(preseason)/team.win_percentage(regular_season)
+      end
+      largest_decrease_in_percentage.team_name
+    end
+
+    def biggest_surprise(season_id)
+      regular_season = group_games_by_season_type("R", games_by_season[season_id])
+      preseason = group_games_by_season_type("P", games_by_season[season_id])
+      largest_increase_in_percentage = @teams.max_by do |team|
+        team.win_percentage(regular_season)/team.win_percentage(preseason)
+      end
+      largest_increase_in_percentage.team_name
+    end
 
 
 
