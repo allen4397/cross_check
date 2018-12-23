@@ -182,7 +182,7 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_can_calculate_team_with_biggest_bust
-    skip
+    
     game_path = './data/extra_test_game.csv'
     team_path = './data/extra_test_team.csv'
     game_teams_path = './data/test_game_team_stats.csv'
