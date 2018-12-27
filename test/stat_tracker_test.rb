@@ -571,5 +571,9 @@ class StatTrackerTest < Minitest::Test
     assert_equal [game_1, game_3, game_4], @stat_tracker.find_games_by_team_id("1", @stat_tracker.games)
   end
 
+ def test_it_groups_games_by_season_type
+    assert [preseason_game_1, preseason_game_2], @stat_tracker.group_games_by_season_type("P")
+    assert [reg_season_game_1, reg_season_game_2], @stat_tracker.group_games_by_season_type("R")
+ end
 
 end

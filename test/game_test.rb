@@ -43,5 +43,4 @@ class GameTest < Minitest::Test
 
     assert_equal 1, game.score_difference
   end
-
 end
