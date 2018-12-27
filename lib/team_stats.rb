@@ -16,47 +16,24 @@ module TeamStats
   end
 
   def seasons_by_team(team_id)
-    games_by_team(team_id).map do |game|
+    find_games_by_team_id(team_id).map do |game|
       game.season
     end.uniq
   end
 
-  def games_by_team_id(team_id)
+  def games_by_team_id(team_id) #returns game_team instance
     find_team(team_id).games_played_in(@games)
   end
 
-  def games_by_season(season, games)
+  def find_games_by_team_id(team_id, games = @games)
     games.select do |game|
-      game.season == season
+      game.away_team_id == team_id || game.home_team_id == team_id
     end
   end
+
 
   def games_by_team_by_season(season, team_id)
-    games_by_season(season, games_by_team(team_id))
-  end
-
-  def seasons_by_win_percentage(team_id)
-    win_perc_seasons = {}
-    seasons_by_team(team_id).each do |season|
-      win_perc_seasons[season] = find_team(team_id).win_percentage(games_by_team_by_season(season, team_id))
-    end
-    return win_perc_seasons
-  end
-
-  def best_season(team_id)
-    highest_win_percentage = seasons_by_win_percentage(team_id).values.max
-    seasons_by_win_percentage(team_id).key(highest_win_percentage)
-  end
-
-  def worst_season(team_id)
-    lowest_win_percentage = seasons_by_win_percentage(team_id).values.min
-    seasons_by_win_percentage(team_id).key(lowest_win_percentage)
-  end
-
-  def average_win_percentage(team_id)
-    total = seasons_by_win_percentage(team_id).values.sum
-    count = seasons_by_win_percentage(team_id).count
-    total / count
+    find_games_by_team_id(team_id, all_games_by_season[season])
   end
 
   def most_goals_scored(team_id) #this uses game_teams, not games

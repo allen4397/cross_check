@@ -77,6 +77,10 @@ class Team
     end
   end
 
+  def goals_scored(games)
+    total_home_points(games) + total_away_points(games)
+  end
+
   def games_played_as_visitor(games)
     games.count do |game|
       game.away_team_id == team_id
@@ -88,4 +92,6 @@ class Team
       game.home_team_id == team_id
     end
   end
+
+
 end
