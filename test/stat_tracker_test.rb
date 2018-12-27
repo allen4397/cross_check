@@ -481,4 +481,5 @@ class StatTrackerTest < Minitest::Test
     assert [preseason_game_1, preseason_game_2], @stat_tracker.group_games_by_season_type("P")
     assert [reg_season_game_1, reg_season_game_2], @stat_tracker.group_games_by_season_type("R")
   end
+
 end

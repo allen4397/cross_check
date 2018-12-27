@@ -32,17 +32,23 @@ class Team
   end
 
   def win_percentage(games)
-    number_of_games_won(games)/games_played_in(games).count.to_f * 100
+    (number_of_games_won(games)/games_played_in(games).count.to_f * 100).round(2)
+  end
+
+  def games_won(games)
+    games.find_all do |game|
+      game.away_team_id == @team_id && game.outcome.include?("away") || game.home_team_id == @team_id && game.outcome.include?("home")
+    end
+  end
+
+  def games_lost(games)
+    games.find_all do |game|
+      game.away_team_id == @team_id && game.outcome.include?("home") || game.home_team_id == @team_id && game.outcome.include?("away")
+    end
   end
 
   def number_of_games_won(games)
-    games_won = 0
-    games.each do |game|
-      if game.away_team_id == @team_id && game.outcome.include?("away") || game.home_team_id == @team_id && game.outcome.include?("home")
-        games_won += 1
-      end
-    end
-    return games_won
+    games_won(games).count
   end
 
   def games_played_in(games)

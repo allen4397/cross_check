@@ -73,4 +73,21 @@ module TeamStats
     return min_goals.goals.to_i
   end
 
+  def biggest_team_blowout(team_id)
+    team = find_team(team_id)
+    games_won = team.games_won(@games)
+    game_with_biggest_team_blowout = games_won.max_by do |game|
+      game.score_difference
+    end
+    game_with_biggest_team_blowout.score_difference
+  end
+
+  def worst_loss(team_id)
+    team = find_team(team_id)
+    games_lost = team.games_lost(@games)
+    game_with_worst_loss = games_lost.max_by do |game|
+      game.score_difference
+    end
+    game_with_worst_loss.score_difference
+  end
 end
