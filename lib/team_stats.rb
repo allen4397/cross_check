@@ -21,8 +21,8 @@ module TeamStats
     end.uniq
   end
 
-  def games_by_team_id(team_id) #returns game_team instance
-    find_team(team_id).games_played_in(@games)
+  def games_by_team_id(team_id, games = @games) #returns game_team instance
+    find_team(team_id).games_played_in(games)
   end
 
   def find_games_by_team_id(team_id, games = @games)

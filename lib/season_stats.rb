@@ -55,16 +55,63 @@ module SeasonStats
     preseason = group_games_by_season_type("P", games)
     reg_season = group_games_by_season_type("R", games)
 
+    preseason_hash = Hash.new(0)
+    reg_season_hash = Hash.new(0)
     preseason_hash = {  :win_percentage => team.win_percentage(preseason),
                         :goals_scored => team.goals_scored(preseason),
                         :goals_against => get_opponent_goals(team_id, preseason)}
 
-      reg_season_hash = { :win_percentage => team.win_percentage(reg_season),
-                          :goals_scored => team.goals_scored(reg_season),
-                          :goals_against => get_opponent_goals(team_id, reg_season)}
+    reg_season_hash = { :win_percentage => team.win_percentage(reg_season),
+                        :goals_scored => team.goals_scored(reg_season),
+                        :goals_against => get_opponent_goals(team_id, reg_season)}
 
         {:preseason => preseason_hash,
-          :regular_season => reg_season_hash}
+        :regular_season => reg_season_hash}
+  end
+
+  def seasonal_summary(team_id)
+    team = find_team(team_id)
+
+    seasons = seasons_by_team(team_id)
+    summary = {}
+
+    seasons.each do |season|
+      games = games_by_team_by_season(season, team_id)
+      preseason = group_games_by_season_type("P", games)
+      reg_season = group_games_by_season_type("R", games)
+
+      summary[season] = season_summary(season, team_id)
+      summary[season][:preseason][:total_goals_scored] = summary[season][:preseason].delete(:goals_scored)
+      summary[season][:preseason][:total_goals_against] = summary[season][:preseason].delete(:goals_against)
+      summary[season][:regular_season][:total_goals_scored] = summary[season][:regular_season].delete(:goals_scored)
+      summary[season][:regular_season][:total_goals_against] = summary[season][:regular_season].delete(:goals_against)
+
+      if preseason.count != 0
+        average_goals_scored = ((team.goals_scored(preseason).to_f) / (preseason.count)).round(2)
+        average_goals_against = (get_opponent_goals(team_id, preseason).to_f / preseason.count).round(2)
+      else
+        average_goals_scored = 0
+        average_goals_against = 0
+
+      end
+
+      summary[season][:preseason][:average_goals_scored] = average_goals_scored
+      summary[season][:preseason][:average_goals_against] = average_goals_against
+
+      if reg_season.count != 0
+        average_goals_scored_reg = ((team.goals_scored(reg_season).to_f) / (reg_season.count)).round(2)
+        average_goals_against_reg = (get_opponent_goals(team_id, reg_season).to_f / reg_season.count).round(2)
+      else
+        average_goals_scored_reg = 0
+        average_goals_against_reg = 0
+      end
+
+      summary[season][:regular_season][:average_goals_scored] = average_goals_scored_reg
+      summary[season][:regular_season][:average_goals_against] = average_goals_against_reg
+
+    end #end of each
+    summary
+
   end
 
 
