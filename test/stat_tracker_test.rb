@@ -623,9 +623,45 @@ class StatTrackerTest < Minitest::Test
                                               }
 
              }
-
   assert_equal expected, stat_tracker_2.seasonal_summary("3")
+ end
 
+ def test_it_can_provide_head_to_head_info_against_a_specific_opponent
+
+   game_1 = mock
+   game_2 = mock
+   game_3 = mock
+   game_4 = mock
+
+   team_1 = mock
+   team_2 = mock
+
+   team_1.stubs(:team_id).returns("1")
+   team_2.stubs(:team_id).returns("2")
+
+   game_1.stubs(:away_team_id).returns("1")
+   game_1.stubs(:home_team_id).returns("2")
+
+   game_2.stubs(:away_team_id).returns("2")
+   game_2.stubs(:home_team_id).returns("1")
+
+   game_3.stubs(:away_team_id).returns("1")
+   game_3.stubs(:home_team_id).returns("2")
+
+   game_4.stubs(:away_team_id).returns("2")
+   game_4.stubs(:home_team_id).returns("1")
+
+   game_1.stubs(:outcome).returns("home win")
+   game_2.stubs(:outcome).returns("away win")
+   game_3.stubs(:outcome).returns("home win")
+   game_4.stubs(:outcome).returns("home win")
+
+   @stat_tracker.teams = [team_1, team_2]
+   @stat_tracker.games = [game_1, game_2, game_3, game_4]
+
+   expected = { win: 1, loss: 3}
+
+   assert_equal expected, @stat_tracker.head_to_head("1", "2")
 
  end
 
