@@ -239,10 +239,56 @@ class StatTrackerTest < Minitest::Test
     assert_equal 100.0, @stat_tracker.home_win_percentages("6", @stat_tracker.games)
   end
 
+  def test_home_win_percentage_is_zero_if_team_has_not_played_at_home
+    team_1 = mock
+    team_2 = mock
+    game_1 = mock
+    game_2 = mock
+
+    team_1.stubs(:team_id).returns("1")
+    team_2.stubs(:team_id).returns("2")
+
+    game_1.stubs(:home_team_id).returns("2")
+    game_1.stubs(:away_team_id).returns("1")
+    game_2.stubs(:home_team_id).returns("2")
+    game_2.stubs(:away_team_id).returns("1")
+
+    game_1.stubs(:outcome).returns("home win")
+    game_2.stubs(:outcome).returns("away win")
+
+    @stat_tracker.teams = [team_1, team_2]
+    @stat_tracker.games = [game_1, game_2]
+
+    assert_equal 0.0, @stat_tracker.home_win_percentages("1", [game_1, game_2])
+  end
+
   def test_it_can_return_away_win_percentage_for_a_team_in_a_selection_of_games
 
 
     assert_equal 50.0, @stat_tracker.away_win_percentages("6", @stat_tracker.games)
+  end
+
+  def test_away_win_percentage_is_zero_if_team_has_not_played_away_games
+    team_1 = mock
+    team_2 = mock
+    game_1 = mock
+    game_2 = mock
+
+    team_1.stubs(:team_id).returns("1")
+    team_2.stubs(:team_id).returns("2")
+
+    game_1.stubs(:home_team_id).returns("2")
+    game_1.stubs(:away_team_id).returns("1")
+    game_2.stubs(:home_team_id).returns("2")
+    game_2.stubs(:away_team_id).returns("1")
+
+    game_1.stubs(:outcome).returns("home win")
+    game_2.stubs(:outcome).returns("away win")
+
+    @stat_tracker.teams = [team_1, team_2]
+    @stat_tracker.games = [game_1, game_2]
+
+    assert_equal 0.0, @stat_tracker.away_win_percentages("2", [game_1, game_2])
   end
 
   def test_it_gets_home_win_percentage_for_all_teams
@@ -690,6 +736,10 @@ class StatTrackerTest < Minitest::Test
   expected = {win: 0, loss: 0 }
 
   assert_equal expected, @stat_tracker.head_to_head("134", "01")
+ end
+
+ def test_game_stats_module_works
+   assert_equal "Game stats module works!", @stat_tracker.game_stats_module_works
  end
 
 end
