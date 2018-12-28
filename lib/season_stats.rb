@@ -65,8 +65,7 @@ module SeasonStats
                         :goals_scored => team.goals_scored(reg_season),
                         :goals_against => get_opponent_goals(team_id, reg_season)}
 
-        {:preseason => preseason_hash,
-        :regular_season => reg_season_hash}
+    {:preseason => preseason_hash, :regular_season => reg_season_hash}
   end
 
   def seasonal_summary(team_id)
