@@ -52,18 +52,18 @@ module SeasonStats
     team = find_team(team_id)
 
     games = games_by_team_by_season(season_id, team_id)
-    preseason = group_games_by_season_type("P", games)
-    reg_season = group_games_by_season_type("R", games)
+    preseason_games = group_games_by_season_type("P", games)
+    reg_season_games = group_games_by_season_type("R", games)
 
     preseason_hash = Hash.new(0)
     reg_season_hash = Hash.new(0)
-    preseason_hash = {  :win_percentage => team.win_percentage(preseason),
-                        :goals_scored => team.goals_scored(preseason),
-                        :goals_against => get_opponent_goals(team_id, preseason)}
+    preseason_hash = {  :win_percentage => team.win_percentage(preseason_games),
+                        :goals_scored => team.goals_scored(preseason_games),
+                        :goals_against => get_opponent_goals(team_id, preseason_games)}
 
-    reg_season_hash = { :win_percentage => team.win_percentage(reg_season),
-                        :goals_scored => team.goals_scored(reg_season),
-                        :goals_against => get_opponent_goals(team_id, reg_season)}
+    reg_season_hash = { :win_percentage => team.win_percentage(reg_season_games),
+                        :goals_scored => team.goals_scored(reg_season_games),
+                        :goals_against => get_opponent_goals(team_id, reg_season_games)}
 
     {:preseason => preseason_hash, :regular_season => reg_season_hash}
   end
