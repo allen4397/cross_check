@@ -303,21 +303,22 @@ class StatTracker
     wins = 0
     losses = 0
 
-    game_teams.each do |g_t|
-      opponent_game_teams.each do |opp_g_t|
+    if game_teams && opponent_game_teams
+      game_teams.each do |g_t|
+        opponent_game_teams.each do |opp_g_t|
 
-        if g_t.game_id == opp_g_t.game_id
-
-          if g_t.won == "TRUE"
-            wins += 1
-          else
-            losses += 1
+          if g_t.game_id == opp_g_t.game_id
+            if g_t.won == "TRUE"
+              wins += 1
+            else
+              losses += 1
+            end
           end
 
         end
       end
     end
-  {win: wins, loss: losses}
+    {win: wins, loss: losses}
   end
 
 

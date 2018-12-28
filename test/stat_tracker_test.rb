@@ -686,4 +686,10 @@ class StatTrackerTest < Minitest::Test
 
  end
 
+ def test_head_to_head_defaults_to_zero_when_two_teams_have_not_played_together
+  expected = {win: 0, loss: 0 }
+
+  assert_equal expected, @stat_tracker.head_to_head("134", "01")
+ end
+
 end
