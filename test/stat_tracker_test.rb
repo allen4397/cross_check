@@ -182,7 +182,8 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_can_calculate_team_with_biggest_bust
-    
+
+
     game_path = './data/extra_test_game.csv'
     team_path = './data/extra_test_team.csv'
     game_teams_path = './data/test_game_team_stats.csv'
@@ -194,11 +195,11 @@ class StatTrackerTest < Minitest::Test
     }
 
     stat_tracker_2 = StatTracker.from_csv(locations)
-    assert_equal "Rangers", stat_tracker_2.biggest_bust("20122013")
+    assert_equal "Bruins", stat_tracker_2.biggest_bust("20122013")
   end
 
   def test_it_can_calculate_team_with_biggest_surprise
-    skip
+
     game_path = './data/extra_test_game.csv'
     team_path = './data/extra_test_team.csv'
     game_teams_path = './data/test_game_team_stats.csv'
@@ -210,7 +211,7 @@ class StatTrackerTest < Minitest::Test
     }
 
     stat_tracker_2 = StatTracker.from_csv(locations)
-    assert_equal "Bruins", stat_tracker_2.biggest_surprise("20122013")
+    assert_equal "Rangers", stat_tracker_2.biggest_surprise("20122013")
   end
 
   def test_it_can_return_home_win_percentage_for_a_team_in_a_selection_of_games
@@ -572,8 +573,43 @@ class StatTrackerTest < Minitest::Test
   end
 
  def test_it_groups_games_by_season_type
+   skip
     assert [preseason_game_1, preseason_game_2], @stat_tracker.group_games_by_season_type("P")
     assert [reg_season_game_1, reg_season_game_2], @stat_tracker.group_games_by_season_type("R")
+ end
+
+ def test_it_can_return_a_seasonal_summary_for_a_given_team
+
+   game_path = './data/extra_test_game.csv'
+   team_path = './data/extra_test_team.csv'
+   game_teams_path = './data/extra_game_team.csv'
+
+   locations = {
+    games: game_path,
+    teams: team_path,
+    game_teams: game_teams_path
+   }
+
+   stat_tracker_2 = StatTracker.from_csv(locations)
+
+   expected = {"20122013" => {preseason: { win_percentage: 0.0,
+                             total_goals_scored: 4,
+                             total_goals_against: 8,
+                             average_goals_scored: 2.0,
+                             average_goals_against: 4.0} ,
+
+                             regular_season: { win_percentage: 33.33,
+                               total_goals_scored: 6,
+                               total_goals_against: 9,
+                               average_goals_scored: 2.0,
+                               average_goals_against: 3.0 }
+                                              }
+
+             }
+
+  assert_equal expected, stat_tracker_2.seasonal_summary("3")
+
+
  end
 
 end

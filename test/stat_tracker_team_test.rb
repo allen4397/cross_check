@@ -75,7 +75,7 @@ class StatTrackerTeamTest < Minitest::Test
   end
 
   def test_it_averages_all_season_win_percentages_for_team
-    skip
+    
     assert_equal 90.0, @stat_tracker.average_win_percentage("6")
   end
 
