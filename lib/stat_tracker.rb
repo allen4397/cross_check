@@ -300,6 +300,8 @@ class StatTracker
 
   def head_to_head(team_id, opponent_team_id)
     game_teams = games_by_team_id(team_id)
+    opponent_game_teams = get_opponent_game_teams(team_id)
+
   end
 
 
