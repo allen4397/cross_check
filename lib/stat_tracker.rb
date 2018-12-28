@@ -300,9 +300,27 @@ class StatTracker
 
   def head_to_head(team_id, opponent_team_id)
     game_teams = games_by_team_id(team_id)
-    opponent_game_teams = get_opponent_game_teams(team_id)
+    opponent_game_teams = games_by_team_id(opponent_team_id)
+    wins = 0
+    losses = 0
 
+    game_teams.each do |g_t|
+      opponent_game_teams.each do |opp_g_t|
+    
+        if g_t.game_id == opp_g_t.game_id
+
+          if g_t.won == "TRUE"
+            wins += 1
+          else
+            losses += 1
+          end
+
+        end
+      end
+    end
+  {win: wins, loss: losses}
   end
+
 
 
 end

@@ -678,7 +678,6 @@ class StatTrackerTest < Minitest::Test
  # end
 
  def test_it_can_provide_head_to_head_record_against_a_specific_opponent
-
    expected_1 = {win: 1, loss: 4}
    expected_2 = {win: 4, loss: 1}
 
