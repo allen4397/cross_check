@@ -12,13 +12,6 @@ module GameStats
     max_game.total_score
   end
 
-  def percentage_home_wins
-    games_won_by_home = games.find_all do |game|
-      game.outcome[0..3] == "home"
-    end
-    (games_won_by_home.count.to_f / games.count * 100).round(2)
-  end
-
   def average_goals_per_game
     total_goals = @games.sum do |game|
       game.total_score
