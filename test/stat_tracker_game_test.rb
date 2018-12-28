@@ -23,8 +23,6 @@ class StatTrackerGameTest < Minitest::Test
     @stat_tracker = StatTracker.from_csv(@locations)
   end
 
-  def test
-    
-  end
+
 
 end
