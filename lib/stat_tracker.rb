@@ -295,7 +295,6 @@ class StatTracker
       end
     end
     goals
-
   end
 
   def head_to_head(team_id, opponent_team_id)
@@ -306,7 +305,7 @@ class StatTracker
 
     game_teams.each do |g_t|
       opponent_game_teams.each do |opp_g_t|
-    
+
         if g_t.game_id == opp_g_t.game_id
 
           if g_t.won == "TRUE"
