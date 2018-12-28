@@ -64,6 +64,26 @@ class TeamTest < Minitest::Test
     assert_equal 83.33 , team.win_percentage(@stat_tracker.games)
   end
 
+  def test_win_percentage_defaults_to_zero_if_team_has_not_played_in_games
+
+    team = @stat_tracker.teams[0]
+    game_1 = mock
+    game_2 = mock
+
+    game_1.stubs(:away_team_id).returns("2")
+    game_1.stubs(:home_team_id).returns("3")
+    game_2.stubs(:away_team_id).returns("3")
+    game_2.stubs(:home_team_id).returns("2")
+
+    game_1.stubs(:outcome).returns("home win")
+    game_2.stubs(:outcome).returns("away win")
+
+    @stat_tracker.games = [game_1, game_2]
+
+    assert_equal 0, team.win_percentage([game_1, game_2])
+
+  end
+
   def test_it_can_calculate_total_away_points
     team = @stat_tracker.teams[0]
     game_1 = mock
