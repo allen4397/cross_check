@@ -21,10 +21,6 @@ module TeamStats
     end.uniq
   end
 
-  def game_teams_by_team_id(team_id) #returns game_team instance
-    find_team(team_id).games_played_in(@games)
-  end
-
   def find_games_by_team_id(team_id, games = @games)
     games.select do |game|
       game.away_team_id == team_id || game.home_team_id == team_id
@@ -32,7 +28,7 @@ module TeamStats
   end
 
   def games_by_team_by_season(season, team_id)
-    find_game_teams_by_team_id(team_id, all_games_by_season[season])
+    find_games_by_team_id(team_id, all_games_by_season[season])
   end
 
   def most_goals_scored(team_id) #this uses game_teams, not games

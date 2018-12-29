@@ -46,7 +46,7 @@ class StatTrackerTest < Minitest::Test
 
 
     assert_instance_of GameTeam, @stat_tracker.game_teams[0]
-    assert_equal 20, @stat_tracker.game_teams.count
+    assert_equal 22, @stat_tracker.game_teams.count
   end
 
   def test_team_stats_module
@@ -143,11 +143,7 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_gets_game_count_by_season
-
-
-
-
-    expected = {"20122013" => 6, "20152016" => 4}
+    expected = {"20122013" => 6, "20152016" => 4, "20132014" => 1}
 
     assert_equal expected, @stat_tracker.count_of_games_by_season
   end
@@ -311,7 +307,7 @@ class StatTrackerTest < Minitest::Test
 
     expected = {  "6" => 50.0,
                   "3" => 0.0,
-                  "17" => 100.0,
+                  "17" => 50.0,
                   "19" => 100.0,
                   "16" => 50.0
 
@@ -405,17 +401,14 @@ class StatTrackerTest < Minitest::Test
   # end
 
   def test_it_can_calculate_win_percentage_for_a_team_across_given_games
-
-
-    assert_equal 80.0 , @stat_tracker.teams[0].win_percentage(@stat_tracker.games)
+    assert_equal 83.33 , @stat_tracker.teams[0].win_percentage(@stat_tracker.games)
   end
 
   def test_it_can_calculate_goals_scored
-
     bruins = @stat_tracker.teams.find do |team|
       team.team_id == "6"
     end
-    assert_equal 16, bruins.goals_scored(@stat_tracker.games)
+    assert_equal 20, bruins.goals_scored(@stat_tracker.games)
   end
 
   def test_it_counts_teams
@@ -423,26 +416,22 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_gets_games_by_all_team_ids
-
-
-
-
     gt = @stat_tracker.game_teams
     t3games = [gt[0], gt[2], gt[5], gt[7], gt[8]]
-    t6games = [gt[1], gt[3], gt[4], gt[6], gt[9]]
-    t17games = [gt[10]]
+    t6games = [gt[1], gt[3], gt[4], gt[6], gt[9], gt[21]]
+    t17games = [gt[10], gt[20]]
     t24games = [gt[11]]
     t16games = [gt[12], gt[14], gt[17], gt[19]]
     t19games = [gt[13], gt[15], gt[16], gt[18]]
     expected = {"3"=>t3games, "6"=>t6games, "17"=>t17games, "24"=>t24games, "16"=>t16games, "19"=>t19games}
-    assert_equal expected, @stat_tracker.games_by_all_team_ids
+    assert_equal expected, @stat_tracker.game_teams_by_all_team_ids
   end
 
   def test_it_gets_games_by_team_id
     gt = @stat_tracker.game_teams
     t3games = [gt[0], gt[2], gt[5], gt[7], gt[8]]
     expected = t3games
-    assert_equal expected, @stat_tracker.games_by_team_id("3")
+    assert_equal expected, @stat_tracker.game_teams_by_team_id("3")
   end
 
   def test_it_gets_team_total_score
@@ -476,13 +465,13 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_gets_opponent_game_ids
-    assert_equal ["2012030221", "2012030222", "2012030223", "2012030224", "2012030225"], @stat_tracker.get_opponent_team_game_ids("3")
+    assert_equal ["2012030221", "2012030222", "2012030223", "2012030224", "2012030225"], @stat_tracker.opponent_team_game_ids("3")
   end
 
   def test_it_gets_opponent_game_teams
     gt = @stat_tracker.game_teams
     expected = [gt[1], gt[3], gt[4], gt[6], gt[9]]
-    assert_equal expected, @stat_tracker.get_opponent_game_teams("3")
+    assert_equal expected, @stat_tracker.opponent_game_teams("3")
   end
 
   def test_it_gets_opponent_scores
@@ -490,7 +479,7 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_gets_all_teams_opponent_averages
-    expected = {"3" => 3.2, "6" => 2.0, "17" => 2.0, "24" => 3.0, "16" => 2.5, "19" => 1.5}
+    expected = {"3" => 3.2, "6" => 2.0, "17" => 2.5, "24" => 3.0, "16" => 2.5, "19" => 1.5}
     assert_equal expected, @stat_tracker.all_teams_opponent_averages
   end
 

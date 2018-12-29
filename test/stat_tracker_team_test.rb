@@ -41,14 +41,14 @@ class StatTrackerTeamTest < Minitest::Test
 
     game = @stat_tracker.games
     expected = [game[0], game[1], game[2], game[3], game[4]]
-    assert_equal expected, @stat_tracker.games_by_team_id("3")
+    assert_equal expected, @stat_tracker.find_games_by_team_id("3")
   end
 
-  def test_it_gets_games_by_season
-
-    game = @stat_tracker.games
-    expected = [game[6], game[7], game[8], game[9]]
-    assert_equal expected, @stat_tracker.games_by_team_by_season("20152016", @stat_tracker.games)
+  def test_it_gets_game_teams_by_team_id
+    gt = @stat_tracker.game_teams
+    t3games = [gt[0], gt[2], gt[5], gt[7], gt[8]]
+    expected = t3games
+    assert_equal expected, @stat_tracker.game_teams_by_team_id("3")
   end
 
   def test_it_gets_games_by_season_for_team_id
@@ -65,13 +65,11 @@ class StatTrackerTeamTest < Minitest::Test
   end
 
   def test_it_gets_best_season
-
-    assert_equal "20122013", @stat_tracker.best_season("6")
+    assert_equal "20132014", @stat_tracker.best_season("6")
   end
 
   def test_it_gets_worst_season
-
-    assert_equal "20132014", @stat_tracker.worst_season("6")
+    assert_equal "20122013", @stat_tracker.worst_season("6")
   end
 
   def test_it_averages_all_season_win_percentages_for_team
@@ -518,13 +516,6 @@ end
   #   assert_equal expected, @stat_tracker.games_by_all_team_ids
   # end
   #
-  # def test_it_gets_game_teams_by_team_id
-  #   skip
-  #   gt = @stat_tracker.game_teams
-  #   t3games = [gt[0], gt[2], gt[5], gt[7], gt[8]]
-  #   expected = t3games
-  #   assert_equal expected, @stat_tracker.games_by_team_id("3")
-  # end
   #
   # def test_it_gets_team_total_score
   #   skip
