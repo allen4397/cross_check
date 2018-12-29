@@ -106,15 +106,7 @@ class Team
 
   end
 
-  def get_average_goals_against(team_id, games)
-    team = find_team(team_id)
 
-    if team.games_played_in(games).count != 0
-      (get_opponent_goals(team_id,games).to_f / team.games_played_in(games).count).round(2)
-    else
-      return 0.0
-    end
-  end
 
 
 end
