@@ -21,8 +21,8 @@ module TeamStats
     end.uniq
   end
 
-  def games_by_team_id(team_id, games = @games) #returns game_team instance
-    find_team(team_id).games_played_in(games)
+  def game_teams_by_team_id(team_id) #returns game_team instance
+    find_team(team_id).games_played_in(@games)
   end
 
   def find_games_by_team_id(team_id, games = @games)
@@ -31,20 +31,19 @@ module TeamStats
     end
   end
 
-
   def games_by_team_by_season(season, team_id)
-    find_games_by_team_id(team_id, all_games_by_season[season])
+    find_game_teams_by_team_id(team_id, all_games_by_season[season])
   end
 
   def most_goals_scored(team_id) #this uses game_teams, not games
-    max_goals = games_by_team_id(team_id).max_by do |game_team|
+    max_goals = game_teams_by_team_id(team_id).max_by do |game_team|
       game_team.goals
     end
     return max_goals.goals.to_i
   end
 
   def fewest_goals_scored(team_id) #this uses game_teams, not games
-    min_goals = games_by_team_id(team_id).min_by do |game_team|
+    min_goals = game_teams_by_team_id(team_id).min_by do |game_team|
       game_team.goals
     end
     return min_goals.goals.to_i
@@ -67,4 +66,31 @@ module TeamStats
     end
     game_with_worst_loss.score_difference
   end
+
+  def opponent_team_ids(team_id)
+    opponent_game_teams(team_id).map do |gt|
+      gt.team_id
+    end.uniq
+  end
+
+  def opponents_by_win_percentage(team_id)
+    opp_win_perc = {}
+    opponent_team_ids(team_id).each do |opponent_id|
+      opp_win_perc[opponent_id] = find_team(opponent_id).win_percentage(@games)
+    end
+    opp_win_perc
+  end
+
+  def favorite_opponent(team_id)
+    lowest_win_percentage = opponents_by_win_percentage(team_id).values.min
+    opponent_id = opponents_by_win_percentage(team_id).key(lowest_win_percentage)
+    get_team_name_from_id(opponent_id)
+  end
+
+  def rival(team_id)
+    highest_win_percentage = opponents_by_win_percentage(team_id).values.max
+    opponent_id = opponents_by_win_percentage(team_id).key(highest_win_percentage)
+    get_team_name_from_id(opponent_id)
+  end
+
 end
