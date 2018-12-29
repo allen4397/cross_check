@@ -147,4 +147,24 @@ class TeamTest < Minitest::Test
 
     assert_equal 1, team.games_played_as_home_team(@stat_tracker.games)
   end
+
+  def test_it_can_calculate_average_goals_scored_per_game_by_a_team_in_a_selection_of_games
+
+    found_team = @stat_tracker.teams.find do |team|
+      team.team_id == "3"
+    end
+    games = @stat_tracker.games[0..3]
+    assert_equal 2.25, found_team.average_goals_scored(games)
+  end
+
+  def test_average_goals_scored_defaults_to_zero_if_a_team_has_not_played_any_games_in_the_selection_of_games
+
+    found_team = @stat_tracker.teams.find do |team|
+      team.team_id == "17"
+    end
+
+    games = @stat_tracker.games[0..3]
+    assert_equal 0, found_team.average_goals_scored(games)
+
+  end
 end

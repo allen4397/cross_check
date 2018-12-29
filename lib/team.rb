@@ -36,7 +36,7 @@ class Team
     (number_of_games_won(games)/games_played_in(games).count.to_f * 100).round(2)
     else
       0
-    end 
+    end
   end
 
   def games_won(games)
@@ -94,6 +94,25 @@ class Team
   def games_played_as_home_team(games)
     games.count do |game|
       game.home_team_id == team_id
+    end
+  end
+
+  def average_goals_scored(games)
+    if games_played_in(games).count != 0
+      ((goals_scored(games)).to_f / games_played_in(games).count).round(2)
+    else
+      0.0
+    end
+
+  end
+
+  def get_average_goals_against(team_id, games)
+    team = find_team(team_id)
+
+    if team.games_played_in(games).count != 0
+      (get_opponent_goals(team_id,games).to_f / team.games_played_in(games).count).round(2)
+    else
+      return 0.0
     end
   end
 

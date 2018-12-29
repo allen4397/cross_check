@@ -672,57 +672,6 @@ class StatTrackerTest < Minitest::Test
   assert_equal expected, stat_tracker_2.seasonal_summary("3")
  end
 
- # def test_it_can_provide_head_to_head_info_against_a_specific_opponent
- #
- #   game_1 = mock
- #   game_2 = mock
- #   game_3 = mock
- #   game_4 = mock
- #
- #   team_1 = mock
- #   team_2 = mock
- #
- #   game_team_1 = mock
- #   game_team_2 = mock
- #   game_team_3 = mock
- #   game_team_4 = mock
- #   game_team_5 = mock
- #   game_team_6 = mock
- #   game_team_7 = mock
- #   game_team_8 = mock
- #
- #   game_team_1.stubs(:)
- #
- #
- #   team_1.stubs(:team_id).returns("1")
- #   team_2.stubs(:team_id).returns("2")
- #
- #   game_1.stubs(:away_team_id).returns("1")
- #   game_1.stubs(:home_team_id).returns("2")
- #
- #   game_2.stubs(:away_team_id).returns("2")
- #   game_2.stubs(:home_team_id).returns("1")
- #
- #   game_3.stubs(:away_team_id).returns("1")
- #   game_3.stubs(:home_team_id).returns("2")
- #
- #   game_4.stubs(:away_team_id).returns("2")
- #   game_4.stubs(:home_team_id).returns("1")
- #
- #   game_1.stubs(:outcome).returns("home win")
- #   game_2.stubs(:outcome).returns("away win")
- #   game_3.stubs(:outcome).returns("home win")
- #   game_4.stubs(:outcome).returns("home win")
- #
- #   @stat_tracker.teams = [team_1, team_2]
- #   @stat_tracker.games = [game_1, game_2, game_3, game_4]
- #
- #   expected = { win: 1, loss: 3}
- #
- #   assert_equal expected, @stat_tracker.head_to_head("1", "2")
- #
- # end
-
  def test_it_can_provide_head_to_head_record_against_a_specific_opponent
    expected_1 = {win: 1, loss: 4}
    expected_2 = {win: 4, loss: 1}
@@ -740,6 +689,25 @@ class StatTrackerTest < Minitest::Test
 
  def test_game_stats_module_works
    assert_equal "Game stats module works!", @stat_tracker.game_stats_module_works
+ end
+
+ def test_it_can_group_games_by_season_team_and_type
+
+   game_path = './data/extra_test_game.csv'
+   team_path = './data/extra_test_team.csv'
+   game_teams_path = './data/extra_game_team.csv'
+
+   locations = {
+    games: game_path,
+    teams: team_path,
+    game_teams: game_teams_path
+   }
+
+   stat_tracker_2 = StatTracker.from_csv(locations)
+
+   game_1 = stat_tracker_2.games[0]
+   game_2 = stat_tracker_2.games[1]
+   assert_equal [game_1, game_2], stat_tracker_2.group_games_by_type_season_and_team("P", "20122013", "3")
  end
 
 end
