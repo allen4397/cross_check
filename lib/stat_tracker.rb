@@ -200,7 +200,7 @@ class StatTracker
     end
   end
 
-  def game_teams_by_team_id(team_id) #returns game_team_instance?
+  def game_teams_by_team_id(team_id) #returns game_team_instance
     game_teams_by_all_team_ids[team_id]
   end
 
@@ -297,8 +297,8 @@ class StatTracker
   end
 
   def head_to_head(team_id, opponent_team_id)
-    game_teams = games_by_team_id(team_id)
-    opponent_game_teams = games_by_team_id(opponent_team_id)
+    game_teams = game_teams_by_team_id(team_id)
+    opponent_game_teams = game_teams_by_team_id(opponent_team_id)
     wins = 0
     losses = 0
 
