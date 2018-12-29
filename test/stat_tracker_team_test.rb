@@ -95,6 +95,22 @@ class StatTrackerTeamTest < Minitest::Test
     assert_equal 1, @stat_tracker.worst_loss("6")
   end
 
+  def test_it_gets_opponent_team_ids
+    assert_equal ["3", "17"], @stat_tracker.opponent_team_ids("6")
+  end
+
+  def test_it_gets_opponents_by_win_percentage
+    expected = {"3"=>20.00, "17"=>50.00}
+    assert_equal expected, @stat_tracker.opponents_by_win_percentage("6")
+  end
+
+  def test_it_gets_opponent_with_lowest_win_percentage
+    assert_equal "Rangers", @stat_tracker.favorite_opponent("6")
+  end
+
+  def test_it_gets_opponent_with_highest_win_percentage
+    assert_equal "Red Wings", @stat_tracker.rival("6")
+  end
 end
 
 

@@ -200,24 +200,24 @@ class StatTracker
     @teams.count
   end
 
-  def games_by_all_team_ids
+  def game_teams_by_all_team_ids
     @game_teams.group_by do |game_team|
       game_team.team_id
     end
   end
 
-  def games_by_team_id(team_id) #returns game_team_instance?
-    games_by_all_team_ids[team_id]
+  def game_teams_by_team_id(team_id) #returns game_team_instance?
+    game_teams_by_all_team_ids[team_id]
   end
 
   def team_total_score(team_id)
-    games_by_team_id(team_id).sum do |game|
+    game_teams_by_team_id(team_id).sum do |game|
       game.goals.to_i
     end
   end
 
   def game_count_by_team_id(team_id)
-    games_by_team_id(team_id).count
+    game_teams_by_team_id(team_id).count
   end
 
   def average_score_by_team_id(team_id)
@@ -238,23 +238,23 @@ class StatTracker
     return worst_team.team_name
   end
 
-  def get_opponent_team_game_ids(team_id)
-    games_by_team_id(team_id).map do |g_t|
-      g_t.game_id
+  def opponent_team_game_ids(team_id)
+    game_teams_by_team_id(team_id).map do |gt|
+      gt.game_id
     end
   end
 
-  def get_opponent_game_teams(team_id)
-    get_opponent_team_game_ids(team_id).map do |game_id|
-      game_teams.find do |g_t|
-        g_t.game_id == game_id && g_t.team_id != team_id
+  def opponent_game_teams(team_id)
+    opponent_team_game_ids(team_id).map do |game_id|
+      game_teams.find do |gt|
+        gt.game_id == game_id && gt.team_id != team_id
       end
     end
   end
 
   def team_opponent_goals(team_id)
-    get_opponent_game_teams(team_id).sum do |g_t|
-      g_t.goals.to_i
+    opponent_game_teams(team_id).sum do |gt|
+      gt.goals.to_i
     end
   end
 
@@ -290,7 +290,6 @@ class StatTracker
     get_team_name_from_id(team_id)
   end
 
-
   def get_opponent_goals(team_id, games = @games)
     goals = 0
     games.each do |game|
@@ -303,6 +302,5 @@ class StatTracker
     goals
 
   end
-
 
 end
