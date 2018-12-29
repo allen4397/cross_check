@@ -2,7 +2,7 @@ require "csv"
 require 'pry'
 
 class GameTeam
-  attr_reader :game_id, :team_id, :goals, :shots
+  attr_reader :game_id, :team_id, :goals, :shots, :won
 
   def initialize(game_team_info)
     @game_id = game_team_info[:game_id]

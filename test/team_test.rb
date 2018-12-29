@@ -64,6 +64,26 @@ class TeamTest < Minitest::Test
     assert_equal 83.33 , team.win_percentage(@stat_tracker.games)
   end
 
+  def test_win_percentage_defaults_to_zero_if_team_has_not_played_in_games
+
+    team = @stat_tracker.teams[0]
+    game_1 = mock
+    game_2 = mock
+
+    game_1.stubs(:away_team_id).returns("2")
+    game_1.stubs(:home_team_id).returns("3")
+    game_2.stubs(:away_team_id).returns("3")
+    game_2.stubs(:home_team_id).returns("2")
+
+    game_1.stubs(:outcome).returns("home win")
+    game_2.stubs(:outcome).returns("away win")
+
+    @stat_tracker.games = [game_1, game_2]
+
+    assert_equal 0, team.win_percentage([game_1, game_2])
+
+  end
+
   def test_it_can_calculate_total_away_points
     team = @stat_tracker.teams[0]
     game_1 = mock
@@ -126,5 +146,25 @@ class TeamTest < Minitest::Test
     game_3.stubs(:home_team_id).returns("6")
 
     assert_equal 1, team.games_played_as_home_team(@stat_tracker.games)
+  end
+
+  def test_it_can_calculate_average_goals_scored_per_game_by_a_team_in_a_selection_of_games
+
+    found_team = @stat_tracker.teams.find do |team|
+      team.team_id == "3"
+    end
+    games = @stat_tracker.games[0..3]
+    assert_equal 2.25, found_team.average_goals_scored(games)
+  end
+
+  def test_average_goals_scored_defaults_to_zero_if_a_team_has_not_played_any_games_in_the_selection_of_games
+
+    found_team = @stat_tracker.teams.find do |team|
+      team.team_id == "17"
+    end
+
+    games = @stat_tracker.games[0..3]
+    assert_equal 0, found_team.average_goals_scored(games)
+
   end
 end

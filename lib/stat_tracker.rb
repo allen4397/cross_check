@@ -47,17 +47,11 @@ class StatTracker
     end
   end
 
-#not sure what this method is for:
-  # def games_by_team_instance(team)
-  #   team.team_id
-  # end
-
   def game_team_instance(game_team_file)
     CSV.foreach(game_team_file, headers: true, header_converters: :symbol) do |row|
       @game_teams << GameTeam.new(row)
     end
   end
-########### HELPER METHOD FOR THE VENUE METHODS
 
   def lowest_scoring_visitor
     lowest_scoring_away_team = teams.min_by do |team|
@@ -300,7 +294,30 @@ class StatTracker
       end
     end
     goals
+  end
 
+  def head_to_head(team_id, opponent_team_id)
+    game_teams = games_by_team_id(team_id)
+    opponent_game_teams = games_by_team_id(opponent_team_id)
+    wins = 0
+    losses = 0
+
+    if game_teams && opponent_game_teams
+      game_teams.each do |g_t|
+        opponent_game_teams.each do |opp_g_t|
+
+          if g_t.game_id == opp_g_t.game_id
+            if g_t.won == "TRUE"
+              wins += 1
+            else
+              losses += 1
+            end
+          end
+
+        end
+      end
+    end
+    {win: wins, loss: losses}
   end
 
 end

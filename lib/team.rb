@@ -32,7 +32,11 @@ class Team
   end
 
   def win_percentage(games)
+    if games_played_in(games).count != 0
     (number_of_games_won(games)/games_played_in(games).count.to_f * 100).round(2)
+    else
+      0
+    end
   end
 
   def games_won(games)
@@ -92,6 +96,17 @@ class Team
       game.home_team_id == team_id
     end
   end
+
+  def average_goals_scored(games)
+    if games_played_in(games).count != 0
+      ((goals_scored(games)).to_f / games_played_in(games).count).round(2)
+    else
+      0.0
+    end
+
+  end
+
+
 
 
 end
