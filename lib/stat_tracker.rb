@@ -7,12 +7,13 @@ require_relative 'team_stats'
 require_relative 'game_stats'
 require_relative 'game_team_stats'
 require_relative 'season_stats'
+require_relative 'league_stats'
 require_relative 'venue_stats'
 require_relative 'win_percentages_stats'
 
 
 class StatTracker
-  include TeamStats, GameStats, GameTeamStats, SeasonStats, VenueStats, WinPercentagesStats
+  include TeamStats, GameStats, GameTeamStats, SeasonStats, VenueStats, WinPercentagesStats, LeagueStats
 
   attr_accessor :teams,
                 :games,
@@ -71,27 +72,11 @@ class StatTracker
     end
   end
 
-  def count_of_teams
-    @teams.count
-  end
-
   def average_score_by_team_id(team_id)
     team_total_score(team_id).to_f / game_count_by_team_id(team_id).to_f
   end
 
-  def best_offense_by_team_name
-    best_team = @teams.max_by do |team|
-      average_score_by_team_id(team.team_id)
-    end
-    return best_team.team_name
-  end
 
-  def worst_offense_by_team_name
-    worst_team = @teams.min_by do |team|
-      average_score_by_team_id(team.team_id)
-    end
-    return worst_team.team_name
-  end
 
   def all_teams_opponent_averages
     all_teams = {}
@@ -115,15 +100,6 @@ class StatTracker
     team_name
   end
 
-  def best_defense
-    team_id = all_teams_opponent_averages.key(all_teams_opponent_averages.values.min)
-    get_team_name_from_id(team_id)
-  end
-
-  def worst_defense
-    team_id = all_teams_opponent_averages.key(all_teams_opponent_averages.values.max)
-    get_team_name_from_id(team_id)
-  end
 
   def get_opponent_goals(team_id, games = @games)
     goals = 0

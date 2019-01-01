@@ -452,7 +452,7 @@ class StatTrackerTest < Minitest::Test
 
 
     #fails due to mismatch between team and team_games
-    assert_equal "Bruins", @stat_tracker.best_offense_by_team_name
+    assert_equal "Bruins", @stat_tracker.best_offense
   end
 
   def test_it_gets_worst_offense_by_team_name
@@ -461,7 +461,7 @@ class StatTrackerTest < Minitest::Test
 
 
     #fails due to mismatch between team and team_name
-    assert_equal "Blackhawks", @stat_tracker.worst_offense_by_team_name
+    assert_equal "Blackhawks", @stat_tracker.worst_offense
   end
 
   def test_it_gets_opponent_game_ids
