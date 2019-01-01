@@ -15,18 +15,6 @@ module TeamStats
     team_hash[id] = find_team(id).provide_info
   end
 
-  
-
-
-
-
-  def winningest_team
-    team_with_highest_win_percentage = @teams.max_by do |team|
-      team.number_of_games_won(games).to_f / team.games_played_in(games).count
-    end
-    team_with_highest_win_percentage.team_name
-  end
-
   def seasons_by_team(team_id)
     find_games_by_team_id(team_id).map do |game|
       game.season

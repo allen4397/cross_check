@@ -72,7 +72,28 @@ module LeagueStats
     lowest_scoring_home_team.team_name
   end
 
+  def winningest_team
+    team_with_highest_win_percentage = @teams.max_by do |team|
+      team.number_of_games_won(games).to_f / team.games_played_in(games).count
+    end
+    team_with_highest_win_percentage.team_name
+  end
 
+  def best_fans
+    best_fans_team = @teams.max_by do |team|
+      team.home_win_percentage - team.away_win_percentage
+    end
+    best_fans_team.team_name
+  end
 
+  def worst_fans
+    worst_fans_teams = @teams.select do |team|
+      team.away_win_percentage > team.home_win_percentage
+    end
+
+    worst_fans_teams.map do |team|
+      team.team_name
+    end
+  end
 
 end

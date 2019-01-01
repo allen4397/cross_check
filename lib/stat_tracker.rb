@@ -55,23 +55,6 @@ class StatTracker
   end
 
 
-  def best_fans
-    best_fans_team = @teams.max_by do |team|
-      team.home_win_percentage - team.away_win_percentage
-    end
-    best_fans_team.team_name
-  end
-
-  def worst_fans
-    worst_fans_teams = @teams.select do |team|
-      team.away_win_percentage > team.home_win_percentage
-    end
-
-    worst_fans_teams.map do |team|
-      team.team_name
-    end
-  end
-
   def average_score_by_team_id(team_id)
     team_total_score(team_id).to_f / game_count_by_team_id(team_id).to_f
   end
