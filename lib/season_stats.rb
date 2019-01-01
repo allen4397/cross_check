@@ -64,25 +64,6 @@ module SeasonStats
     average_by_season
   end
 
-  def season_summary(season_id, team_id)
-    team = find_team(team_id)
-
-    preseason_games = group_games_by_type_season_and_team("P", season_id, team_id)
-    reg_season_games = group_games_by_type_season_and_team("R", season_id, team_id)
-
-    preseason_hash = Hash.new(0)
-    reg_season_hash = Hash.new(0)
-    preseason_hash = {  :win_percentage => team.win_percentage(preseason_games),
-                        :goals_scored => team.goals_scored(preseason_games),
-                        :goals_against => get_opponent_goals(team_id, preseason_games)}
-
-    reg_season_hash = { :win_percentage => team.win_percentage(reg_season_games),
-                        :goals_scored => team.goals_scored(reg_season_games),
-                        :goals_against => get_opponent_goals(team_id, reg_season_games)}
-
-    {:preseason => preseason_hash, :regular_season => reg_season_hash}
-  end
-
   def seasonal_summary(team_id)
     team = find_team(team_id)
 
@@ -122,7 +103,7 @@ module SeasonStats
     end
   end
 
-
+#########season stats
 
   def biggest_bust(season_id)
     regular_season = group_games_by_season_type("R", all_games_by_season[season_id])
@@ -141,6 +122,28 @@ module SeasonStats
       end
     largest_increase_in_percentage.team_name
   end
+
+  def season_summary(season_id, team_id)
+    team = find_team(team_id)
+
+    preseason_games = group_games_by_type_season_and_team("P", season_id, team_id)
+    reg_season_games = group_games_by_type_season_and_team("R", season_id, team_id)
+
+    preseason_hash = Hash.new(0)
+    reg_season_hash = Hash.new(0)
+    preseason_hash = {  :win_percentage => team.win_percentage(preseason_games),
+                        :goals_scored => team.goals_scored(preseason_games),
+                        :goals_against => get_opponent_goals(team_id, preseason_games)}
+
+    reg_season_hash = { :win_percentage => team.win_percentage(reg_season_games),
+                        :goals_scored => team.goals_scored(reg_season_games),
+                        :goals_against => get_opponent_goals(team_id, reg_season_games)}
+
+    {:preseason => preseason_hash, :regular_season => reg_season_hash}
+  end
+
+
+
 
 
 
