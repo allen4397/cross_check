@@ -22,5 +22,5 @@ module VenueStats
       [venue, games.count]
     end
   end
-  
+
 end

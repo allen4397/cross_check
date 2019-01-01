@@ -52,6 +52,18 @@ module SeasonStats
     total / count
   end
 
+
+  def average_goals_by_season
+    average_by_season = {}
+    all_games_by_season.each do |season, games|
+      total_score_for_season = games.sum do |game|
+        game.total_score
+      end
+      average_by_season[season] = (total_score_for_season.to_f/games.flatten.count).round(2)
+    end
+    average_by_season
+  end
+
   def season_summary(season_id, team_id)
     team = find_team(team_id)
 
