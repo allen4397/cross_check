@@ -19,13 +19,17 @@ module LeagueStats
   end
 
   def best_defense
-    team_id = all_teams_opponent_averages.key(all_teams_opponent_averages.values.min)
-    get_team_name_from_id(team_id)
+    found_team = @teams.min_by do |team|
+      team.average_goals_against(@games)
+    end
+    return found_team.team_name
   end
 
   def worst_defense
-    team_id = all_teams_opponent_averages.key(all_teams_opponent_averages.values.max)
-    get_team_name_from_id(team_id)
+    found_team = @teams.max_by do |team|
+      team.average_goals_against(@games)
+    end
+    return found_team.team_name
   end
 
   def highest_scoring_visitor

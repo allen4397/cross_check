@@ -9,7 +9,7 @@ module WinPercentagesStats
       game.outcome.include?("home")
     end
     if games_played_at_home.length != 0
-      return (games_won_at_home.to_f / games_played_at_home.length) * 100.0
+      return (games_won_at_home.to_f / games_played_at_home.length).round(2)
     else
       return 0.0
     end
@@ -25,7 +25,7 @@ module WinPercentagesStats
     end
 
     if games_played_away.length != 0
-      return (games_won_away.to_f / games_played_away.length) * 100.0
+      return (games_won_away.to_f / games_played_away.length).round(2)
     else
       return 0.0
     end
@@ -72,14 +72,14 @@ module WinPercentagesStats
     games_won_by_home = games.find_all do |game|
       game.outcome[0..3] == "home"
     end
-    (games_won_by_home.count.to_f / games.count * 100).round(2)
+    (games_won_by_home.count.to_f / games.count).round(2)
   end
 
   def percentage_visitor_wins
     games_won_by_visitor = games.find_all do |game|
       game.outcome[0..3] == "away"
     end
-    (games_won_by_visitor.count.to_f / games.count * 100).round(2)
+    (games_won_by_visitor.count.to_f / games.count).round(2)
   end
 
 end

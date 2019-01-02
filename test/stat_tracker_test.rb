@@ -150,12 +150,12 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_gets_season_with_most_games
-    assert_equal 20122013, @stat_tracker.season_with_most_games
+    assert_equal "20122013", @stat_tracker.season_with_most_games
   end
 
   def test_it_gets_season_with_fewest_games
 
-    assert_equal 20132014, @stat_tracker.season_with_fewest_games
+    assert_equal "20132014", @stat_tracker.season_with_fewest_games
   end
 
   def test_it_gets_games_by_season
@@ -194,7 +194,6 @@ class StatTrackerTest < Minitest::Test
   end
 
   def test_it_can_calculate_winningest_team
-
     assert_equal "Bruins", @stat_tracker.winningest_team
   end
 
@@ -388,7 +387,7 @@ class StatTrackerTest < Minitest::Test
     assert_equal 6, @stat_tracker.count_of_teams
   end
 
-  def test_it_gets_games_by_all_team_ids #add comments to know what t3 games are etc 
+  def test_it_gets_games_by_all_team_ids #add comments to know what t3 games are etc
     gt = @stat_tracker.game_teams
     t3games = [gt[0], gt[2], gt[5], gt[7], gt[8]]
     t6games = [gt[1], gt[3], gt[4], gt[6], gt[9], gt[21]]

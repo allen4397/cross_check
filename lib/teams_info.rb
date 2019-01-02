@@ -46,8 +46,10 @@ module TeamsInfo
 
   def opponents_by_win_percentage(team_id)
     opp_win_perc = {}
+
     opponent_team_ids(team_id).each do |opponent_id|
-      opp_win_perc[opponent_id] = find_team(opponent_id).win_percentage(@games)
+      games_against = find_team(team_id).opponent_games(opponent_id, @games)
+      opp_win_perc[opponent_id] = find_team(opponent_id).win_percentage(games_against)
     end
     opp_win_perc
   end

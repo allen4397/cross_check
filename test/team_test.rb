@@ -30,12 +30,13 @@ class TeamTest < Minitest::Test
 
   def test_it_can_provide_info
     expected = {
-                franchise_id: "6",
-                short_name: "Boston",
-                team_name: "Bruins",
-                abbreviation: "BOS",
-                link: "/api/v1/teams/6"
-    }
+                "franchise_id"=>"6",
+                "short_name"=>"Boston",
+                "team_name"=>"Bruins",
+                "abbreviation"=>"BOS",
+                "link"=>"/api/v1/teams/6",
+                "team_id"=>"6"
+                }
 
     test_team = @stat_tracker.teams[0]
 
@@ -61,7 +62,7 @@ class TeamTest < Minitest::Test
 
   def test_it_can_calculate_win_percentage
     team = @stat_tracker.teams[0]
-    assert_equal 83.33 , team.win_percentage(@stat_tracker.games)
+    assert_equal 0.83 , team.win_percentage(@stat_tracker.games)
   end
 
   def test_win_percentage_defaults_to_zero_if_team_has_not_played_in_games
@@ -274,5 +275,26 @@ class TeamTest < Minitest::Test
 
     assert_equal 0.0, found_team.average_goals_against([game_1, game_2, game_3])
 
+  end
+
+  def test_it_can_get_games_against_a_specific_opponent
+    found_team = @stat_tracker.teams.find do |team|
+      team.team_id == "17"
+    end
+
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+
+    game_1.stubs(:away_team_id).returns("17")
+    game_1.stubs(:home_team_id).returns("5")
+    game_2.stubs(:away_team_id).returns("17")
+    game_2.stubs(:home_team_id).returns("2")
+    game_3.stubs(:away_team_id).returns("5")
+    game_3.stubs(:home_team_id).returns("17")
+
+    games = [game_1, game_2, game_3]
+
+    assert_equal [game_1, game_3], found_team.opponent_games("5", games)
   end
 end
