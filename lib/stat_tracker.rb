@@ -1,7 +1,6 @@
 require 'csv'
 require_relative 'game'
 require_relative 'team'
-require 'pry'
 require_relative 'game_team'
 require_relative 'team_stats'
 require_relative 'game_stats'

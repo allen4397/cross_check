@@ -29,7 +29,7 @@ class Team
 
   def win_percentage(games)
     if games_played_in(games).count != 0
-    (number_of_games_won(games)/games_played_in(games).count.to_f * 100).round(2)
+      (number_of_games_won(games)/games_played_in(games).count.to_f * 100).round(2)
     else
       0
     end

@@ -6,14 +6,14 @@ module LeagueStats
 
   def best_offense
     best_team = @teams.max_by do |team|
-      average_score_by_team_id(team.team_id)
+      team.average_goals_scored(@games)
     end
     return best_team.team_name
   end
 
   def worst_offense
     worst_team = @teams.min_by do |team|
-      average_score_by_team_id(team.team_id)
+      team.average_goals_scored(@games)
     end
     return worst_team.team_name
   end
