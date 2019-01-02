@@ -21,7 +21,7 @@ module TeamStatistics
     total / count
   end
 
-  def most_goals_scored(team_id) #this uses game_teams, not games
+  def most_goals_scored(team_id)
     max_goals = game_teams_by_team_id(team_id).max_by do |game_team|
       game_team.goals
     end

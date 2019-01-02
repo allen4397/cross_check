@@ -2,7 +2,7 @@ require 'csv'
 require_relative 'game'
 require_relative 'team'
 require_relative 'game_team'
-require_relative 'team_stats'
+require_relative 'teams_info'
 require_relative 'game_stats'
 require_relative 'game_team_stats'
 require_relative 'season_stats'
@@ -14,7 +14,7 @@ require_relative 'team_statistics'
 
 
 class StatTracker
-  include TeamStats, GameStats, GameTeamStats, SeasonStats, VenueStats, WinPercentagesStats, LeagueStats, SeasonSummary, TeamStatistics
+  include TeamStatistics,TeamsInfo, GameStats, GameTeamStats, SeasonStats, VenueStats, WinPercentagesStats, LeagueStats, SeasonSummary, TeamStatistics
 
   attr_accessor :teams,
                 :games,
@@ -54,11 +54,5 @@ class StatTracker
       @game_teams << GameTeam.new(row)
     end
   end
-
-
-
-
-
-
 
 end

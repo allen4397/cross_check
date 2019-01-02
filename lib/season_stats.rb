@@ -1,5 +1,13 @@
 module SeasonStats
 
+  def seasons_by_win_percentage(team_id) #helper method
+    win_perc_seasons = {}
+    seasons_by_team(team_id).each do |season|
+      win_perc_seasons[season] = find_team(team_id).win_percentage(games_by_team_by_season(season, team_id))
+    end
+    return win_perc_seasons
+  end
+  
   def season_with_most_games
     highest_count = count_of_games_by_season.values.max
     count_of_games_by_season.key(highest_count).to_i
@@ -26,14 +34,6 @@ module SeasonStats
 
   def group_games_by_type_season_and_team(type, season_id, team_id)
     group_games_by_season_type(type, games_by_team_by_season(season_id, team_id))
-  end
-
-  def seasons_by_win_percentage(team_id)
-    win_perc_seasons = {}
-    seasons_by_team(team_id).each do |season|
-      win_perc_seasons[season] = find_team(team_id).win_percentage(games_by_team_by_season(season, team_id))
-    end
-    return win_perc_seasons
   end
 
   def average_goals_by_season

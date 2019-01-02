@@ -1,4 +1,4 @@
-module TeamStats
+module TeamsInfo
 
   def test_module
     "THIS MODULE WORKS!"

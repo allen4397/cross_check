@@ -3,7 +3,8 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require 'mocha/minitest'
 require './lib/stat_tracker'
-require './lib/team_stats'
+require './lib/teams_info'
+require './lib/team_statistics'
 require 'pry'
 
 class StatTrackerTeamTest < Minitest::Test

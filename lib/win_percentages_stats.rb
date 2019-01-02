@@ -82,7 +82,4 @@ module WinPercentagesStats
     (games_won_by_visitor.count.to_f / games.count * 100).round(2)
   end
 
-
-
-
 end
