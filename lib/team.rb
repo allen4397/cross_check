@@ -1,6 +1,4 @@
-require "csv"
-require 'pry'
-require './lib/stat_tracker'
+require './lib/game'
 
 class Team
 
@@ -19,8 +17,6 @@ class Team
     @link = team_info[:link]
     @away_win_percentage = 0
     @home_win_percentage = 0
-    @pre_season_win_percentage = 0
-    @post_season_win_percentage = 0
   end
 
   def provide_info
@@ -33,7 +29,7 @@ class Team
 
   def win_percentage(games)
     if games_played_in(games).count != 0
-    (number_of_games_won(games)/games_played_in(games).count.to_f * 100).round(2)
+      (number_of_games_won(games)/games_played_in(games).count.to_f * 100).round(2)
     else
       0
     end
@@ -85,6 +81,18 @@ class Team
     total_home_points(games) + total_away_points(games)
   end
 
+  def goals_against(games)
+    games.sum do |game|
+      if team_id == game.home_team_id
+        game.away_goals
+      elsif team_id == game.away_team_id
+        game.home_goals
+      else
+        0
+      end
+    end
+  end
+
   def games_played_as_visitor(games)
     games.count do |game|
       game.away_team_id == team_id
@@ -106,7 +114,12 @@ class Team
 
   end
 
-
-
+  def average_goals_against(games)
+    if games_played_in(games).count != 0
+      (goals_against(games).to_f / games_played_in(games).count).round(2)
+    else
+      0.0
+    end
+  end
 
 end

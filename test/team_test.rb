@@ -167,4 +167,112 @@ class TeamTest < Minitest::Test
     assert_equal 0, found_team.average_goals_scored(games)
 
   end
+
+  def test_it_can_calculate_goals_against
+    found_team = @stat_tracker.teams.find do |team|
+      team.team_id == "17"
+    end
+
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+
+    game_1.stubs(:away_team_id).returns("17")
+    game_1.stubs(:home_team_id).returns("3")
+    game_2.stubs(:away_team_id).returns("5")
+    game_2.stubs(:home_team_id).returns("17")
+    game_3.stubs(:away_team_id).returns("17")
+    game_3.stubs(:home_team_id).returns("2")
+
+    game_1.stubs(:away_goals).returns(1)
+    game_1.stubs(:home_goals).returns(2)
+    game_2.stubs(:away_goals).returns(3)
+    game_2.stubs(:home_goals).returns(5)
+    game_3.stubs(:away_goals).returns(0)
+    game_3.stubs(:home_goals).returns(1)
+
+    assert_equal 6.0, found_team.goals_against([game_1, game_2, game_3])
+  end
+
+  def test_it_can_calculate_average_goals_against
+    found_team = @stat_tracker.teams.find do |team|
+      team.team_id == "17"
+    end
+
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+
+    game_1.stubs(:away_team_id).returns("17")
+    game_1.stubs(:home_team_id).returns("3")
+    game_2.stubs(:away_team_id).returns("5")
+    game_2.stubs(:home_team_id).returns("17")
+    game_3.stubs(:away_team_id).returns("17")
+    game_3.stubs(:home_team_id).returns("2")
+
+    game_1.stubs(:away_goals).returns(1)
+    game_1.stubs(:home_goals).returns(2)
+    game_2.stubs(:away_goals).returns(3)
+    game_2.stubs(:home_goals).returns(5)
+    game_3.stubs(:away_goals).returns(0)
+    game_3.stubs(:home_goals).returns(2)
+
+    assert_equal 2.33, found_team.average_goals_against([game_1, game_2, game_3])
+
+  end
+
+  def test_goals_against_is_zero_if_team_has_not_played_in_those_games
+    found_team = @stat_tracker.teams.find do |team|
+      team.team_id == "17"
+    end
+
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+
+    game_1.stubs(:away_team_id).returns("2")
+    game_1.stubs(:home_team_id).returns("5")
+    game_2.stubs(:away_team_id).returns("3")
+    game_2.stubs(:home_team_id).returns("2")
+    game_3.stubs(:away_team_id).returns("4")
+    game_3.stubs(:home_team_id).returns("5")
+
+    game_1.stubs(:away_goals).returns(1)
+    game_1.stubs(:home_goals).returns(2)
+    game_2.stubs(:away_goals).returns(3)
+    game_2.stubs(:home_goals).returns(5)
+    game_3.stubs(:away_goals).returns(0)
+    game_3.stubs(:home_goals).returns(2)
+
+    assert_equal 0, found_team.goals_against([game_1, game_2, game_3])
+
+
+  end
+
+  def test_average_goals_against_defaults_to_zero_if_team_has_not_played_in_those_games
+    found_team = @stat_tracker.teams.find do |team|
+      team.team_id == "17"
+    end
+
+    game_1 = mock
+    game_2 = mock
+    game_3 = mock
+
+    game_1.stubs(:away_team_id).returns("2")
+    game_1.stubs(:home_team_id).returns("5")
+    game_2.stubs(:away_team_id).returns("3")
+    game_2.stubs(:home_team_id).returns("2")
+    game_3.stubs(:away_team_id).returns("4")
+    game_3.stubs(:home_team_id).returns("5")
+
+    game_1.stubs(:away_goals).returns(1)
+    game_1.stubs(:home_goals).returns(2)
+    game_2.stubs(:away_goals).returns(3)
+    game_2.stubs(:home_goals).returns(5)
+    game_3.stubs(:away_goals).returns(0)
+    game_3.stubs(:home_goals).returns(2)
+
+    assert_equal 0.0, found_team.average_goals_against([game_1, game_2, game_3])
+
+  end
 end
