@@ -169,14 +169,11 @@ class TeamTest < Minitest::Test
   end
 
   def test_it_can_calculate_average_goals_against
-    skip
     found_team = @stat_tracker.teams.find do |team|
       team.team_id == "17"
     end
 
-    games = @stat_tracker.games[0..3]
-
-    assert_equal 3.0, found_team.average_goals_against(games)
+    assert_equal 3.0, found_team.average_goals_against(@stat_tracker.games)
 
   end
 end

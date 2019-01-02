@@ -90,7 +90,7 @@ class Team
       if team_id == game.home_team_id
         game.away_goals
       elsif team_id == game.away_team_id
-        game.home_team_id
+        game.home_goals
       else
         0
       end
