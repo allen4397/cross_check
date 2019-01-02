@@ -21,6 +21,10 @@ module GameTeamStats
   end
 
   def all_teams_opponent_averages
+    @all_teams_opponent_averages ||= average_teams_opponent
+  end
+
+  def average_teams_opponent #helper method for all teams opponent averages
     all_teams = {}
 
     @teams.each do |team|

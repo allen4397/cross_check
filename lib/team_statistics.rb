@@ -16,9 +16,7 @@ module TeamStatistics
   end
 
   def average_win_percentage(team_id)
-    total = seasons_by_win_percentage(team_id).values.sum
-    count = seasons_by_win_percentage(team_id).count
-    total / count
+    find_team(team_id).win_percentage(@games)
   end
 
   def most_goals_scored(team_id)
@@ -36,14 +34,16 @@ module TeamStatistics
   end
 
   def favorite_opponent(team_id)
-    lowest_win_percentage = opponents_by_win_percentage(team_id).values.min
-    opponent_id = opponents_by_win_percentage(team_id).key(lowest_win_percentage)
+    opponents_hash = opponents_by_win_percentage(team_id)
+    lowest_win_percentage = opponents_hash.values.min
+    opponent_id = opponents_hash.key(lowest_win_percentage)
     get_team_name_from_id(opponent_id)
   end
 
   def rival(team_id)
-    highest_win_percentage = opponents_by_win_percentage(team_id).values.max
-    opponent_id = opponents_by_win_percentage(team_id).key(highest_win_percentage)
+    opponents_hash = opponents_by_win_percentage(team_id)
+    highest_win_percentage = opponents_hash.values.max
+    opponent_id = opponents_hash.key(highest_win_percentage)
     get_team_name_from_id(opponent_id)
   end
 
@@ -65,28 +65,21 @@ module TeamStatistics
     game_with_worst_loss.score_difference
   end
 
-  def head_to_head(team_id, opponent_team_id)
-    game_teams = game_teams_by_team_id(team_id)
-    opponent_game_teams = game_teams_by_team_id(opponent_team_id)
-    wins = 0
-    losses = 0
-
-    if game_teams && opponent_game_teams
-      game_teams.each do |g_t|
-        opponent_game_teams.each do |opp_g_t|
-
-          if g_t.game_id == opp_g_t.game_id
-            if g_t.won == "TRUE"
-              wins += 1
-            else
-              losses += 1
-            end
-          end
-
-        end
-      end
-    end
-    {win: wins, loss: losses}
+  def get_all_opponents(team_id)
   end
+
+  def head_to_head(team_id)
+    head_to_head = Hash.new
+    query_team = find_team(team_id)
+
+    @teams.each do |team|
+      if team.team_id != query_team.team_id
+        games_played_against_query_team = query_team.opponent_games(team.team_id, @games)
+        head_to_head[team.team_name] = query_team.win_percentage(games_played_against_query_team)
+      end
+    end 
+    head_to_head
+  end
+
 
 end

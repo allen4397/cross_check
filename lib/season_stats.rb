@@ -1,21 +1,21 @@
 module SeasonStats
 
-  def seasons_by_win_percentage(team_id) #helper method
+  def seasons_by_win_percentage(team_id)
     win_perc_seasons = {}
     seasons_by_team(team_id).each do |season|
       win_perc_seasons[season] = find_team(team_id).win_percentage(games_by_team_by_season(season, team_id))
     end
     return win_perc_seasons
   end
-  
+
   def season_with_most_games
     highest_count = count_of_games_by_season.values.max
-    count_of_games_by_season.key(highest_count).to_i
+    count_of_games_by_season.key(highest_count)
   end
 
   def season_with_fewest_games
     lowest_count = count_of_games_by_season.values.min
-    count_of_games_by_season.key(lowest_count).to_i
+    count_of_games_by_season.key(lowest_count)
   end
 
   def count_of_games_by_season

@@ -20,16 +20,17 @@ class Team
   end
 
   def provide_info
-                { franchise_id: @franchise_id,
-                  short_name: @short_name,
-                  team_name: @team_name,
-                  abbreviation: @abbreviation,
-                  link: @link}
+                { "franchise_id" => @franchise_id,
+                  "short_name" => @short_name,
+                  "team_name" => @team_name,
+                  "abbreviation" => @abbreviation,
+                  "link" => @link,
+                  "team_id" => @team_id}
   end
 
   def win_percentage(games)
     if games_played_in(games).count != 0
-      (number_of_games_won(games)/games_played_in(games).count.to_f * 100).round(2)
+      (number_of_games_won(games)/games_played_in(games).count.to_f).round(2)
     else
       0
     end
@@ -121,5 +122,12 @@ class Team
       0.0
     end
   end
+
+  def opponent_games(opponent_id, games)
+    games_played_in(games).select do |game|
+      game.away_team_id == opponent_id || game.home_team_id == opponent_id
+    end
+  end
+
 
 end
