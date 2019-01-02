@@ -10,10 +10,12 @@ require_relative 'season_stats'
 require_relative 'league_stats'
 require_relative 'venue_stats'
 require_relative 'win_percentages_stats'
+require_relative 'season_summary'
+require_relative 'team_statistics'
 
 
 class StatTracker
-  include TeamStats, GameStats, GameTeamStats, SeasonStats, VenueStats, WinPercentagesStats, LeagueStats
+  include TeamStats, GameStats, GameTeamStats, SeasonStats, VenueStats, WinPercentagesStats, LeagueStats, SeasonSummary, TeamStatistics
 
   attr_accessor :teams,
                 :games,
@@ -71,53 +73,19 @@ class StatTracker
     all_teams
   end
 
-  def get_team_name_from_id(team_id)
-    team_name = nil
+  def get_average_goals_against(team_id, games)
+    team = find_team(team_id)
 
-    @teams.each do |team|
-      if team.team_id == team_id
-        team_name = team.team_name
-      end
+    if team.games_played_in(games).count != 0
+      (get_opponent_goals(team_id,games).to_f / team.games_played_in(games).count).round(2)
+    else
+      return 0.0
     end
-
-    team_name
   end
 
 
-  def get_opponent_goals(team_id, games = @games)
-    goals = 0
-    games.each do |game|
-      if game.away_team_id == team_id
-        goals += game.home_goals
-      elsif game.home_team_id == team_id
-        goals += game.away_goals
-      end
-    end
-    goals
-  end
 
-  def head_to_head(team_id, opponent_team_id)
-    game_teams = game_teams_by_team_id(team_id)
-    opponent_game_teams = game_teams_by_team_id(opponent_team_id)
-    wins = 0
-    losses = 0
 
-    if game_teams && opponent_game_teams
-      game_teams.each do |g_t|
-        opponent_game_teams.each do |opp_g_t|
 
-          if g_t.game_id == opp_g_t.game_id
-            if g_t.won == "TRUE"
-              wins += 1
-            else
-              losses += 1
-            end
-          end
-
-        end
-      end
-    end
-    {win: wins, loss: losses}
-  end
 
 end

@@ -85,6 +85,18 @@ class Team
     total_home_points(games) + total_away_points(games)
   end
 
+  def goals_against(games)
+    games.sum do |game|
+      if team_id == game.home_team_id
+        game.away_goals
+      elsif team_id == game.away_team_id
+        game.home_team_id
+      else
+        0
+      end
+    end
+  end
+
   def games_played_as_visitor(games)
     games.count do |game|
       game.away_team_id == team_id
@@ -105,6 +117,16 @@ class Team
     end
 
   end
+
+  def average_goals_against(games)
+    if games_played_in(games).count != 0
+      (goals_against(games).to_f / games_played_in(games).count).round(2)
+    else
+      0.0
+    end
+  end
+
+
 
 
 
