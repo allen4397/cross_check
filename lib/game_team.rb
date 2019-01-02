@@ -1,6 +1,3 @@
-require "csv"
-require 'pry'
-
 class GameTeam
   attr_reader :game_id, :team_id, :goals, :shots, :won
 

@@ -1,5 +1,3 @@
-require 'csv'
-
 class Game
   attr_reader :venue,
               :season,

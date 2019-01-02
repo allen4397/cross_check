@@ -57,32 +57,6 @@ class StatTracker
   end
 
 
-  def average_score_by_team_id(team_id)
-    team_total_score(team_id).to_f / game_count_by_team_id(team_id).to_f
-  end
-
-
-
-  def all_teams_opponent_averages
-    all_teams = {}
-
-    @teams.each do |team|
-      all_teams[team.team_id] = (team_opponent_goals(team.team_id))/game_count_by_team_id(team.team_id).to_f
-    end
-
-    all_teams
-  end
-
-  def get_average_goals_against(team_id, games)
-    team = find_team(team_id)
-
-    if team.games_played_in(games).count != 0
-      (get_opponent_goals(team_id,games).to_f / team.games_played_in(games).count).round(2)
-    else
-      return 0.0
-    end
-  end
-
 
 
 

@@ -20,6 +20,15 @@ module GameTeamStats
     end
   end
 
+  def all_teams_opponent_averages
+    all_teams = {}
+
+    @teams.each do |team|
+      all_teams[team.team_id] = (team_opponent_goals(team.team_id))/game_count_by_team_id(team.team_id).to_f
+    end
+    all_teams
+  end
+
   def game_teams_by_all_team_ids
     @game_teams.group_by do |game_team|
       game_team.team_id
@@ -36,8 +45,13 @@ module GameTeamStats
     end
   end
 
+  def average_score_by_team_id(team_id)
+    team_total_score(team_id).to_f / game_count_by_team_id(team_id).to_f
+  end
+
   def game_count_by_team_id(team_id)
     game_teams_by_team_id(team_id).count
   end
+
 
 end

@@ -4,7 +4,6 @@ module GameStats
     "Game stats module works!"
   end
 
-
   def highest_total_score
     max_game = @games.max_by do |game|
       game.total_score

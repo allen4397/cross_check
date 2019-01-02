@@ -28,11 +28,11 @@ module SeasonSummary
     reg_season_hash = Hash.new(0)
     preseason_hash = {  :win_percentage => team.win_percentage(preseason_games),
                         :goals_scored => team.goals_scored(preseason_games),
-                        :goals_against => get_opponent_goals(team_id, preseason_games)}
+                        :goals_against => team.goals_against(preseason_games)}
 
     reg_season_hash = { :win_percentage => team.win_percentage(reg_season_games),
                         :goals_scored => team.goals_scored(reg_season_games),
-                        :goals_against => get_opponent_goals(team_id, reg_season_games)}
+                        :goals_against => team.goals_against(reg_season_games)}
 
     {:preseason => preseason_hash, :regular_season => reg_season_hash}
   end
@@ -57,24 +57,13 @@ def seasonal_summary(team_id)
     summary[season][:regular_season][:total_goals_against] = summary[season][:regular_season].delete(:goals_against)
 
     summary[season][:preseason][:average_goals_scored] = team.average_goals_scored(preseason_games)
-    summary[season][:preseason][:average_goals_against] = get_average_goals_against(team_id, preseason_games)
+    summary[season][:preseason][:average_goals_against] = team.average_goals_against(preseason_games)
 
     summary[season][:regular_season][:average_goals_scored] = team.average_goals_scored(reg_season_games)
-    summary[season][:regular_season][:average_goals_against] = get_average_goals_against(team_id, reg_season_games)
+    summary[season][:regular_season][:average_goals_against] = team.average_goals_against(reg_season_games)
 
   end
   summary
 end
 
-def get_opponent_goals(team_id, games = @games)
-  goals = 0
-  games.each do |game|
-    if game.away_team_id == team_id
-      goals += game.home_goals
-    elsif game.home_team_id == team_id
-      goals += game.away_goals
-    end
-  end
-  goals
-end
 end

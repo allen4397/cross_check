@@ -541,23 +541,6 @@ class StatTrackerTest < Minitest::Test
 
   end
 
-  def test_it_can_get_opponent_goals_for_a_team_with_selection_of_games
-
-    game_path = './data/extra_test_game.csv'
-    team_path = './data/extra_test_team.csv'
-    game_teams_path = './data/extra_game_team.csv'
-
-    locations = {
-     games: game_path,
-     teams: team_path,
-     game_teams: game_teams_path
-    }
-
-    stat_tracker_2 = StatTracker.from_csv(locations)
-    assert_equal 10, stat_tracker_2.get_opponent_goals("6",stat_tracker_2.games)
-
-  end
-
   def test_it_can_group_games_by_season_and_team
 
     game_1 = mock
@@ -699,33 +682,7 @@ class StatTrackerTest < Minitest::Test
    assert_equal [game_1, game_2], stat_tracker_2.group_games_by_type_season_and_team("P", "20122013", "3")
  end
 
- def test_average_goals_against_a_team_defaults_to_zero_when_a_team_has_not_played_in_a_selection_of_games
-
-   game_path = './data/extra_test_game.csv'
-   team_path = './data/extra_test_team.csv'
-   game_teams_path = './data/extra_game_team.csv'
-
-   locations = {
-    games: game_path,
-    teams: team_path,
-    game_teams: game_teams_path
-   }
-
-   stat_tracker_2 = StatTracker.from_csv(locations)
-
-   game_1 = mock
-   game_2 = mock
-
-   game_1.stubs(:away_team_id).returns("1")
-   game_1.stubs(:home_team_id).returns("2")
-   game_2.stubs(:away_team_id).returns("1")
-   game_2.stubs(:home_team_id).returns("2")
-
-   stat_tracker_2.games = [game_1, game_2]
-
-
-   assert_equal 0.0, stat_tracker_2.get_average_goals_against("6", stat_tracker_2.games )
- end
+ 
 
 
 end
