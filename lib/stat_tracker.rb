@@ -14,7 +14,15 @@ require_relative 'team_statistics'
 
 
 class StatTracker
-  include TeamStatistics,TeamsInfo, GameStats, GameTeamStats, SeasonStats, VenueStats, WinPercentagesStats, LeagueStats, SeasonSummary, TeamStatistics
+  include TeamStatistics,
+          TeamsInfo,
+          GameStats,
+          GameTeamStats,
+          SeasonStats,
+          VenueStats,
+          WinPercentagesStats,
+          LeagueStats,
+          SeasonSummary
 
   attr_reader :team_stats,
               :teams,
