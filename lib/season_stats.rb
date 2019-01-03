@@ -10,12 +10,12 @@ module SeasonStats
 
   def season_with_most_games
     highest_count = count_of_games_by_season.values.max
-    count_of_games_by_season.key(highest_count)
+    count_of_games_by_season.key(highest_count).to_i
   end
 
   def season_with_fewest_games
     lowest_count = count_of_games_by_season.values.min
-    count_of_games_by_season.key(lowest_count)
+    count_of_games_by_season.key(lowest_count).to_i
   end
 
   def count_of_games_by_season

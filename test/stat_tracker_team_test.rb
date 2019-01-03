@@ -24,11 +24,13 @@ class StatTrackerTeamTest < Minitest::Test
   end
 
   def test_it_gets_team_info
-    expected = {franchise_id: "10",
-                short_name: "NY Rangers",
-                team_name: "Rangers",
-                abbreviation: "NYR",
-                link: "/api/v1/teams/3"}
+    expected = {"franchise_id" => "10",
+                "short_name" => "NY Rangers",
+                "team_name" => "Rangers",
+                "abbreviation" => "NYR",
+                "link" => "/api/v1/teams/3",
+                "team_id" => "3"
+              }
     assert_equal expected, @stat_tracker.team_info("3")
   end
 
@@ -61,7 +63,7 @@ class StatTrackerTeamTest < Minitest::Test
 
   def test_it_gets_seasons_by_win_percentage_for_team
 
-    expected = {"20122013" => 80.0, "20132014" => 100.0}
+    expected = {"20122013" => 0.80, "20132014" => 1.0}
     assert_equal expected, @stat_tracker.seasons_by_win_percentage("6")
   end
 
@@ -75,7 +77,7 @@ class StatTrackerTeamTest < Minitest::Test
 
   def test_it_averages_all_season_win_percentages_for_team
 
-    assert_equal 90.0, @stat_tracker.average_win_percentage("6")
+    assert_equal 0.83, @stat_tracker.average_win_percentage("6")
   end
 
   def test_it_gets_highest_goals_for_team
@@ -99,15 +101,15 @@ class StatTrackerTeamTest < Minitest::Test
   end
 
   def test_it_gets_opponents_by_win_percentage
-    expected = {"3"=>20.00, "17"=>50.00}
+    expected = {"3"=>0.20, "17"=>0.00}
     assert_equal expected, @stat_tracker.opponents_by_win_percentage("6")
   end
 
   def test_it_gets_opponent_with_lowest_win_percentage
-    assert_equal "Rangers", @stat_tracker.favorite_opponent("6")
+    assert_equal "Red Wings", @stat_tracker.favorite_opponent("6")
   end
 
   def test_it_gets_opponent_with_highest_win_percentage
-    assert_equal "Red Wings", @stat_tracker.rival("6")
+    assert_equal "Rangers", @stat_tracker.rival("6")
   end
 end
