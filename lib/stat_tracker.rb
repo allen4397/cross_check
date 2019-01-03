@@ -16,11 +16,10 @@ require_relative 'team_statistics'
 class StatTracker
   include TeamStatistics,TeamsInfo, GameStats, GameTeamStats, SeasonStats, VenueStats, WinPercentagesStats, LeagueStats, SeasonSummary, TeamStatistics
 
-  attr_accessor :teams,
-                :games,
-                :game_teams
-
-  attr_reader :team_stats
+  attr_reader :team_stats,
+              :teams,
+              :games,
+              :game_teams
 
   def initialize(info_hash)
     @games = []
