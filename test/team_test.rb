@@ -79,9 +79,9 @@ class TeamTest < Minitest::Test
     game_1.stubs(:outcome).returns("home win")
     game_2.stubs(:outcome).returns("away win")
 
-    @stat_tracker.games = [game_1, game_2]
+    games = [game_1, game_2]
 
-    assert_equal 0, team.win_percentage([game_1, game_2])
+    assert_equal 0, team.win_percentage(games)
 
   end
 
@@ -90,7 +90,7 @@ class TeamTest < Minitest::Test
     game_1 = mock
     game_2 = mock
     game_3 = mock
-    @stat_tracker.games = [game_1, game_2, game_3]
+    games = [game_1, game_2, game_3]
 
     game_1.stubs(:away_team_id).returns("3")
     game_2.stubs(:away_team_id).returns("6")
@@ -100,7 +100,7 @@ class TeamTest < Minitest::Test
     game_2.stubs(:away_goals).returns(5)
     game_3.stubs(:away_goals).returns(2)
 
-    assert_equal 7, team.total_away_points(@stat_tracker.games)
+    assert_equal 7, team.total_away_points(games)
   end
 
   def test_it_can_calculate_total_home_points
@@ -108,7 +108,7 @@ class TeamTest < Minitest::Test
     game_1 = mock
     game_2 = mock
     game_3 = mock
-    @stat_tracker.games = [game_1, game_2, game_3]
+    games = [game_1, game_2, game_3]
 
     game_1.stubs(:home_team_id).returns("6")
     game_2.stubs(:home_team_id).returns("3")
@@ -118,7 +118,7 @@ class TeamTest < Minitest::Test
     game_2.stubs(:home_goals).returns(3)
     game_3.stubs(:home_goals).returns(1)
 
-    assert_equal 5, team.total_home_points(@stat_tracker.games)
+    assert_equal 5, team.total_home_points(games)
   end
 
   def test_it_can_calculate_number_of_games_played_as_visitor
@@ -126,13 +126,13 @@ class TeamTest < Minitest::Test
     game_1 = mock
     game_2 = mock
     game_3 = mock
-    @stat_tracker.games = [game_1, game_2, game_3]
+    games = [game_1, game_2, game_3]
 
     game_1.stubs(:away_team_id).returns("3")
     game_2.stubs(:away_team_id).returns("6")
     game_3.stubs(:away_team_id).returns("6")
 
-    assert_equal 2, team.games_played_as_visitor(@stat_tracker.games)
+    assert_equal 2, team.games_played_as_visitor(games)
   end
 
   def test_it_can_calculate_number_of_games_played_as_home_team
@@ -140,13 +140,13 @@ class TeamTest < Minitest::Test
     game_1 = mock
     game_2 = mock
     game_3 = mock
-    @stat_tracker.games = [game_1, game_2, game_3]
+    games = [game_1, game_2, game_3]
 
     game_1.stubs(:home_team_id).returns("3")
     game_2.stubs(:home_team_id).returns("3")
     game_3.stubs(:home_team_id).returns("6")
 
-    assert_equal 1, team.games_played_as_home_team(@stat_tracker.games)
+    assert_equal 1, team.games_played_as_home_team(games)
   end
 
   def test_it_can_calculate_average_goals_scored_per_game_by_a_team_in_a_selection_of_games
